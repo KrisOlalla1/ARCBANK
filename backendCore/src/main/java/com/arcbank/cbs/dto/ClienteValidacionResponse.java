@@ -12,7 +12,7 @@ public class ClienteValidacionResponse {
     private boolean existe;
     private Integer idCliente;
     private String identificacion;
-    private String tipoCliente; // P o E
+    private String tipoCliente; 
     private String nombreCompleto;
     private String estado;
     private String mensaje;

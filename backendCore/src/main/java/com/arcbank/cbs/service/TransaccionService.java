@@ -27,27 +27,22 @@ public class TransaccionService {
         log.info("Procesando depósito en cuenta: {} por monto: {}", 
                  request.getNumeroCuenta(), request.getMonto());
 
-        // Validar monto
         if (request.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
             throw new TransaccionInvalidaException("El monto debe ser mayor a cero");
         }
 
-        // Buscar cuenta
         CuentaAhorro cuenta = cuentaAhorroRepository.findByNumeroCuenta(request.getNumeroCuenta())
                 .orElseThrow(() -> new CuentaNoEncontradaException(request.getNumeroCuenta()));
 
-        // Validar estado de cuenta
         if (!"ACTIVA".equals(cuenta.getEstado())) {
             throw new CuentaInactivaException(cuenta.getNumeroCuenta(), cuenta.getEstado());
         }
 
-        // Actualizar saldos
         BigDecimal nuevoSaldo = cuenta.getSaldoActual().add(request.getMonto());
         cuenta.setSaldoActual(nuevoSaldo);
         cuenta.setSaldoDisponible(nuevoSaldo);
         cuenta.setFechaUltimaTransaccion(LocalDateTime.now());
 
-        // Crear transacción
         Transaccion transaccion = new Transaccion();
         transaccion.setCuentaAhorro(cuenta);
         transaccion.setTipo("DEPOSITO");
@@ -57,12 +52,10 @@ public class TransaccionService {
         transaccion.setDescripcion(request.getDescripcion());
         transaccion.setReferencia(normalizarReferencia(request.getReferencia(), "DEP"));
         if (request.getIdSucursalTx() != null) {
-            // Si necesitas setear la sucursal, crea una referencia o cárgala
-            // transaccion.setSucursalTx(sucursal);
+
         }
         transaccion.setEstado("COMPLETADA");
 
-        // Guardar
         cuentaAhorroRepository.save(cuenta);
         transaccion = transaccionRepository.save(transaccion);
 
@@ -77,32 +70,26 @@ public class TransaccionService {
         log.info("Procesando retiro en cuenta: {} por monto: {}", 
                  request.getNumeroCuenta(), request.getMonto());
 
-        // Validar monto
         if (request.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
             throw new TransaccionInvalidaException("El monto debe ser mayor a cero");
         }
 
-        // Buscar cuenta
         CuentaAhorro cuenta = cuentaAhorroRepository.findByNumeroCuenta(request.getNumeroCuenta())
                 .orElseThrow(() -> new CuentaNoEncontradaException(request.getNumeroCuenta()));
 
-        // Validar estado de cuenta
         if (!"ACTIVA".equals(cuenta.getEstado())) {
             throw new CuentaInactivaException(cuenta.getNumeroCuenta(), cuenta.getEstado());
         }
 
-        // Validar saldo disponible
         if (cuenta.getSaldoDisponible().compareTo(request.getMonto()) < 0) {
             throw new SaldoInsuficienteException(cuenta.getNumeroCuenta());
         }
 
-        // Actualizar saldos
         BigDecimal nuevoSaldo = cuenta.getSaldoActual().subtract(request.getMonto());
         cuenta.setSaldoActual(nuevoSaldo);
         cuenta.setSaldoDisponible(nuevoSaldo);
         cuenta.setFechaUltimaTransaccion(LocalDateTime.now());
 
-        // Crear transacción
         Transaccion transaccion = new Transaccion();
         transaccion.setCuentaAhorro(cuenta);
         transaccion.setTipo("RETIRO");
@@ -112,12 +99,10 @@ public class TransaccionService {
         transaccion.setDescripcion(request.getDescripcion());
         transaccion.setReferencia(normalizarReferencia(request.getReferencia(), "RET"));
         if (request.getIdSucursalTx() != null) {
-            // Si necesitas setear la sucursal, crea una referencia o cárgala
-            // transaccion.setSucursalTx(sucursal);
+
         }
         transaccion.setEstado("COMPLETADA");
 
-        // Guardar
         cuentaAhorroRepository.save(cuenta);
         transaccion = transaccionRepository.save(transaccion);
 
@@ -134,27 +119,22 @@ public class TransaccionService {
                  request.getNumeroCuentaDestino(), 
                  request.getMonto());
 
-        // Validar que no sean la misma cuenta
         if (request.getNumeroCuentaOrigen().equals(request.getNumeroCuentaDestino())) {
             throw new TransaccionInvalidaException("No se puede transferir a la misma cuenta");
         }
 
-        // Validar monto
         if (request.getMonto().compareTo(BigDecimal.ZERO) <= 0) {
             throw new TransaccionInvalidaException("El monto debe ser mayor a cero");
         }
 
-        // Buscar cuenta origen
         CuentaAhorro cuentaOrigen = cuentaAhorroRepository
                 .findByNumeroCuenta(request.getNumeroCuentaOrigen())
                 .orElseThrow(() -> new CuentaNoEncontradaException(request.getNumeroCuentaOrigen()));
 
-        // Buscar cuenta destino
         CuentaAhorro cuentaDestino = cuentaAhorroRepository
                 .findByNumeroCuenta(request.getNumeroCuentaDestino())
                 .orElseThrow(() -> new CuentaNoEncontradaException(request.getNumeroCuentaDestino()));
 
-        // Validar estados
         if (!"ACTIVA".equals(cuentaOrigen.getEstado())) {
             throw new CuentaInactivaException(cuentaOrigen.getNumeroCuenta(), cuentaOrigen.getEstado());
         }
@@ -162,24 +142,20 @@ public class TransaccionService {
             throw new CuentaInactivaException(cuentaDestino.getNumeroCuenta(), cuentaDestino.getEstado());
         }
 
-        // Validar saldo
         if (cuentaOrigen.getSaldoDisponible().compareTo(request.getMonto()) < 0) {
             throw new SaldoInsuficienteException(cuentaOrigen.getNumeroCuenta());
         }
 
-        // Debitar de cuenta origen
         BigDecimal nuevoSaldoOrigen = cuentaOrigen.getSaldoActual().subtract(request.getMonto());
         cuentaOrigen.setSaldoActual(nuevoSaldoOrigen);
         cuentaOrigen.setSaldoDisponible(nuevoSaldoOrigen);
         cuentaOrigen.setFechaUltimaTransaccion(LocalDateTime.now());
 
-        // Acreditar en cuenta destino
         BigDecimal nuevoSaldoDestino = cuentaDestino.getSaldoActual().add(request.getMonto());
         cuentaDestino.setSaldoActual(nuevoSaldoDestino);
         cuentaDestino.setSaldoDisponible(nuevoSaldoDestino);
         cuentaDestino.setFechaUltimaTransaccion(LocalDateTime.now());
 
-        // Crear transacción de débito (origen)
         Transaccion txOrigen = new Transaccion();
         txOrigen.setCuentaAhorro(cuentaOrigen);
         txOrigen.setTipo("RETIRO");
@@ -190,12 +166,10 @@ public class TransaccionService {
                                (request.getDescripcion() != null ? " - " + request.getDescripcion() : ""));
         txOrigen.setReferencia(normalizarReferencia(request.getReferencia(), "TRF"));
         if (request.getIdSucursalTx() != null) {
-            // Si necesitas setear la sucursal, crea una referencia o cárgala
-            // txOrigen.setSucursalTx(sucursal);
+
         }
         txOrigen.setEstado("COMPLETADA");
 
-        // Crear transacción de crédito (destino)
         Transaccion txDestino = new Transaccion();
         txDestino.setCuentaAhorro(cuentaDestino);
         txDestino.setTipo("DEPOSITO");
@@ -206,12 +180,10 @@ public class TransaccionService {
                                 (request.getDescripcion() != null ? " - " + request.getDescripcion() : ""));
         txDestino.setReferencia(txOrigen.getReferencia());
         if (request.getIdSucursalTx() != null) {
-            // Si necesitas setear la sucursal, crea una referencia o cárgala
-            // txDestino.setSucursalTx(sucursal);
+
         }
         txDestino.setEstado("COMPLETADA");
 
-        // Guardar todo
         cuentaAhorroRepository.save(cuentaOrigen);
         cuentaAhorroRepository.save(cuentaDestino);
         txOrigen = transaccionRepository.save(txOrigen);

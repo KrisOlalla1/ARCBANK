@@ -23,11 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Controlador para endpoints simplificados usados por el frontend del Cajero
- * Estos endpoints son más simples que los de ConsultaController
- * Los endpoints NO llevan prefijo /api/core porque el Gateway ya hace StripPrefix
- */
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -40,10 +36,7 @@ public class CajeroIntegrationController {
     @PersistenceContext
     private EntityManager entityManager;
 
-    /**
-     * GET /clientes/cedula/{cedula}
-     * Retorna información básica del cliente por cédula/identificación
-     */
+
     @GetMapping("/clientes/cedula/{cedula}")
     public ResponseEntity<?> getClienteByCedula(@PathVariable String cedula) {
         log.info("Buscando cliente por cédula: {}", cedula);
@@ -81,10 +74,7 @@ public class CajeroIntegrationController {
             .orElse(ResponseEntity.status(404).body("Cliente no encontrado"));
     }
 
-    /**
-     * GET /cuentas/numero/{numero}
-     * Retorna información de la cuenta por número de cuenta
-     */
+
     @GetMapping("/cuentas/numero/{numero}")
     public ResponseEntity<?> getCuentaByNumero(@PathVariable String numero) {
         log.info("Buscando cuenta por número: {}", numero);
@@ -98,11 +88,9 @@ public class CajeroIntegrationController {
                 response.put("saldoDisponible", cuenta.getSaldoDisponible());
                 response.put("estado", cuenta.getEstado());
                 
-                // Obtener tipo de cuenta
                 TipoCuentaAhorro tipoCuenta = entityManager.find(TipoCuentaAhorro.class, cuenta.getIdTipoCuenta());
                 response.put("tipo", tipoCuenta != null ? tipoCuenta.getNombre() : "N/A");
                 
-                // Obtener información del cliente
                 Cliente cliente = entityManager.find(Cliente.class, cuenta.getIdCliente());
                 if (cliente != null) {
                     response.put("cedula", cliente.getIdentificacion());
@@ -134,10 +122,7 @@ public class CajeroIntegrationController {
             .orElse(ResponseEntity.status(404).body("Cuenta no encontrada"));
     }
 
-    /**
-     * GET /cuentas/cedula/{cedula}
-     * Retorna las cuentas del cliente por su cédula
-     */
+
     @GetMapping("/cuentas/cedula/{cedula}")
     public ResponseEntity<?> getCuentasByCedula(@PathVariable String cedula) {
         log.info("Buscando cuentas por cédula: {}", cedula);
@@ -150,7 +135,6 @@ public class CajeroIntegrationController {
                     return ResponseEntity.status(404).body("No se encontraron cuentas activas");
                 }
                 
-                // Retornar la primera cuenta activa
                 CuentaAhorro cuenta = cuentas.get(0);
                 
                 Map<String, Object> response = new HashMap<>();
@@ -190,10 +174,7 @@ public class CajeroIntegrationController {
             .orElse(ResponseEntity.status(404).body("Cliente no encontrado"));
     }
 
-    /**
-     * POST /transacciones/deposito
-     * Procesa un depósito (usado por frontend cajero)
-     */
+
     @PostMapping("/transacciones/deposito")
     public ResponseEntity<TransaccionResponse> procesarDeposito(@Valid @RequestBody DepositoRequest request) {
         log.info("Cajero API: Depósito para cuenta: {}", request.getNumeroCuenta());
@@ -201,10 +182,7 @@ public class CajeroIntegrationController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    /**
-     * POST /transacciones/retiro
-     * Procesa un retiro (usado por frontend cajero)
-     */
+
     @PostMapping("/transacciones/retiro")
     public ResponseEntity<TransaccionResponse> procesarRetiro(@Valid @RequestBody RetiroRequest request) {
         log.info("Cajero API: Retiro para cuenta: {}", request.getNumeroCuenta());

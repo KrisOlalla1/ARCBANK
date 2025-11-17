@@ -20,10 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * Entidad que define los tipos de cuentas de ahorro disponibles.
- * Define parámetros como tasa de interés máxima y período de amortización.
- */
+
 @Entity
 @Table(name = "TipoCuentaAhorro")
 @Data
@@ -43,31 +40,19 @@ public class TipoCuentaAhorro {
     @Column(name = "Descripcion", length = 500)
     private String descripcion;
 
-    /**
-     * Tasa de interés máxima anual permitida para este tipo de cuenta.
-     */
     @Column(name = "TasaInteresMaxima", nullable = false, precision = 5, scale = 2)
     private BigDecimal tasaInteresMaxima;
 
-    /**
-     * Período de amortización de intereses: MENSUAL, TRIMESTRAL, ANUAL
-     */
+
     @Column(name = "Amortizacion", nullable = false, length = 20)
     private String amortizacion;
 
-    /**
-     * Indica si este tipo de cuenta está activo para nuevas contrataciones.
-     */
+
     @Column(name = "Activo", nullable = false)
     @Builder.Default
     private Boolean activo = true;
 
-    // ...existing code...
 
-    /**
-     * Relación 1:N con TasaInteresHistorial.
-     * Un tipo de cuenta puede tener múltiples entradas de tasa de interés históricas.
-     */
     @OneToMany(mappedBy = "tipoCuentaAhorro", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

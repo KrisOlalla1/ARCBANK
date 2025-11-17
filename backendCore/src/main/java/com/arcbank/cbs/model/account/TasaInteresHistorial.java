@@ -17,10 +17,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Entidad que mantiene el historial de tasas de interés para cada tipo de cuenta.
- * Permite auditar cambios en tasas y conocer la tasa vigente.
- */
+
 @Entity
 @Table(name = "TasaInteresHistorial")
 @Data
@@ -34,36 +31,24 @@ public class TasaInteresHistorial {
     @Column(name = "IdTasaHistorial")
     private Integer idTasaHistorial;
 
-    /**
-     * Relación N:1 con TipoCuentaAhorro.
-     * Muchas entradas de tasa histórica pueden pertenecer a un mismo tipo de cuenta.
-     */
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "IdTipoCuenta", nullable = false)
     private TipoCuentaAhorro tipoCuentaAhorro;
 
-    /**
-     * Tasa de interés anual en vigencia durante el período.
-     */
+
     @Column(name = "TasaInteresAnual", nullable = false, precision = 5, scale = 2)
     private BigDecimal tasaInteresAnual;
 
-    /**
-     * Fecha de inicio de vigencia de esta tasa.
-     */
+
     @Column(name = "FechaInicioVigencia", nullable = false)
     private LocalDate fechaInicioVigencia;
 
-    /**
-     * Fecha de fin de vigencia de esta tasa.
-     * NULL indica que la tasa está vigente actualmente.
-     */
+
     @Column(name = "FechaFinVigencia")
     private LocalDate fechaFinVigencia;
 
-    /**
-     * Observaciones adicionales sobre el cambio de tasa.
-     */
+
     @Column(name = "Observaciones", length = 500)
     private String observaciones;
 

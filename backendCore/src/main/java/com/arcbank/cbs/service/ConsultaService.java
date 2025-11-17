@@ -44,10 +44,7 @@ public class ConsultaService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    /**
-     * Valida la existencia y estado de un cliente por su identificación
-     * Usado por Backend Banca Web durante el registro
-     */
+
     @Transactional(readOnly = true)
     public ClienteValidacionResponse validarCliente(String identificacion) {
         log.info("Validando existencia de cliente: {}", identificacion);
@@ -181,10 +178,7 @@ public class ConsultaService {
         return response;
     }
 
-    /**
-     * CORREGIDO: Determina si un movimiento es un DÉBITO o un CRÉDITO
-     * basándose en el tipo de transacción semántico.
-     */
+
     private String determinarTipoMovimiento(String tipoTransaccion) {
         return switch (tipoTransaccion) {
             case "RETIRO" -> "DEBITO";
@@ -193,10 +187,7 @@ public class ConsultaService {
         };
     }
 
-    /**
-     * Obtiene los detalles completos de una cuenta por su número
-     * Usado por Backend Cajero para validar cuentas en depósitos/retiros
-     */
+
     @Transactional(readOnly = true)
     public CuentaDetalleResponse obtenerDetalleCuenta(String numeroCuenta) {
         log.info("Consultando detalles de cuenta: {}", numeroCuenta);

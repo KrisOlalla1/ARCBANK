@@ -25,7 +25,6 @@ public class TransaccionCajeroController {
 
     @PostMapping("/retirar")
     public TransaccionCajero retirar(@RequestBody OperacionCajeroRequest request) {
-        // Reutilizar depositar con tipo RETIRO en el servicio: añadiremos método luego
         request.setDescripcion(request.getDescripcion());
         return service.retirar(request);
     }

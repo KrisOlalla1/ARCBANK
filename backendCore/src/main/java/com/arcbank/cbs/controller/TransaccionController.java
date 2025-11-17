@@ -27,7 +27,6 @@ public class TransaccionController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // Alias para compatibilidad con frontend cajero
     @PostMapping("/deposito")
     public ResponseEntity<TransaccionResponse> deposito(@Valid @RequestBody DepositoRequest request) {
         return depositar(request);
@@ -40,7 +39,6 @@ public class TransaccionController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // Alias para compatibilidad con frontend cajero
     @PostMapping("/retiro")
     public ResponseEntity<TransaccionResponse> retiro(@Valid @RequestBody RetiroRequest request) {
         return retirar(request);

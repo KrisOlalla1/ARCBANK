@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true) // Ignorar campos adicionales del frontend
+@JsonIgnoreProperties(ignoreUnknown = true) 
 public class RetiroRequest {
 
     @NotBlank(message = "El número de cuenta es obligatorio")
@@ -29,7 +29,6 @@ public class RetiroRequest {
 
     private Integer idSucursalTx;
     
-    // Campos adicionales del frontend cajero (opcionales)
     private Integer idCajero;
     private String tipo;
 }

@@ -17,8 +17,8 @@ public class CuentaDetalleResponse {
     private BigDecimal saldoActual;
     private BigDecimal saldoDisponible;
     private String estado;
-    private String tipoCliente; // "P" o "E"
-    private String identificacion; // cedula o RUC
+    private String tipoCliente; 
+    private String identificacion; 
     private String nombres;
     private String apellidos;
     private String razonSocial;

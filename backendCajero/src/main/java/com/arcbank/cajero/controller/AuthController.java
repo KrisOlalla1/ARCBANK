@@ -33,13 +33,11 @@ public class AuthController {
 
         Cajero cajero = cajeroOpt.get();
         
-        // Validar clave con BCrypt
         if (!passwordEncoder.matches(request.getClave(), cajero.getClave())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Credenciales inválidas");
         }
 
-        // Validar estado activo
         if (!"ACTIVO".equalsIgnoreCase(cajero.getEstado())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body("Usuario inactivo");

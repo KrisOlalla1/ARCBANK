@@ -91,7 +91,6 @@ public class UsuarioSistemaController {
             } catch (Exception ex) {
             }
 
-            // Devolver datos del usuario directamente en la respuesta
             return ResponseEntity.ok(new UsuarioResponse(usuario, usuario.getIdentificacion()));
         } else {
             return ResponseEntity.badRequest().body("Contraseña incorrecta");

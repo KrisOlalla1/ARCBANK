@@ -449,13 +449,11 @@ Devuelve: { success: true, nuevoSaldo: 4400 }
 
 **NUNCA hacer:**
 ```javascript
-// ❌ PROHIBIDO - Llamada directa al Core
 fetch('http://localhost:8080/api/core/...')
 ```
 
 **SIEMPRE hacer:**
 ```javascript
-// ✅ CORRECTO - A través del Gateway
 fetch('http://localhost:8085/cbs/api/core/...')
 ```
 
