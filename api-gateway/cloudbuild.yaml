@@ -22,11 +22,14 @@ steps:
     - '8085'
     - '--allow-unauthenticated'
 
-# Paso 4: Darle permiso al gateway para invocar al servicio core
+# Paso 4: Darle permiso al gateway para invocar a los servicios backend
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  # Usamos bash para poder ejecutar el sub-comando
   entrypoint: 'bash'
   args:
   - '-c'
-  # El comando completo va en una sola línea para que bash lo interprete
-  - 'gcloud run services add-iam-policy-binding cbs-service --region=us-central1 --member="serviceAccount:$$(gcloud run services describe api-gateway-service --region=us-central1 --format="value(spec.template.spec.serviceAccountName)")" --role="roles/run.invoker"'
+  - |
+    SERVICE_ACCOUNT=$$(gcloud run services describe api-gateway-service --region=us-central1 --format="value(spec.template.spec.serviceAccountName)")
+    gcloud run services add-iam-policy-binding cbs-service --region=us-central1 --member="serviceAccount:$$SERVICE_ACCOUNT" --role="roles/run.invoker"
+    gcloud run services add-iam-policy-binding bancaweb-service --region=us-central1 --member="serviceAccount:$$SERVICE_ACCOUNT" --role="roles/run.invoker"
+    gcloud run services add-iam-policy-binding cajero-service --region=us-central1 --member="serviceAccount:$$SERVICE_ACCOUNT" --role="roles/run.invoker"
+

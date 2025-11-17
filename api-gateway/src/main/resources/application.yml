@@ -7,13 +7,19 @@ spring:
     gateway:
       routes:
         - id: cajero-service
-          uri: http://localhost:8082
+          # Apunta al servicio cajero en Cloud Run
+          uri: https://cajero-service-845403368692.us-central1.run.app
           predicates:
             - Path=/cajero/**
           filters:
             - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: cajeroCircuitBreaker
+                fallbackUri: forward:/fallback/cajero
         - id: bancaweb-service
-          uri: http://localhost:8081
+          # Apunta al servicio bancaweb en Cloud Run
+          uri: https://bancaweb-service-845403368692.us-central1.run.app
           predicates:
             - Path=/bancaweb/**
           filters:
@@ -23,7 +29,7 @@ spring:
                 name: bancawebCircuitBreaker
                 fallbackUri: forward:/fallback/bancaweb
         - id: cbs-service
-          # ¡IMPORTANTE! Apuntamos a la URL del servicio Cloud Run
+          # Apunta al servicio core en Cloud Run
           uri: https://cbs-service-845403368692.us-central1.run.app
           predicates:
             - Path=/cbs/**
