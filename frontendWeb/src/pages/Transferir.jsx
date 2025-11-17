@@ -56,7 +56,6 @@ export default function Transfer() {
 
                 realizarTransferencia(request)
                     .then(res => {
-                        // si todo OK, registrar en estado local
                         const tx = {
                             id: "tx-" + Date.now(),
                             accId: fromAcc,
@@ -67,7 +66,6 @@ export default function Transfer() {
                         };
                         addTransaction(tx);
                         setStep(4);
-                        // Redirigir a Movimientos después de 2 segundos
                         setTimeout(() => {
                             navigate('/movimientos');
                         }, 2000);

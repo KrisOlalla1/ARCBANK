@@ -14,10 +14,8 @@ export default function Movimientos(){
   const loadMovements = async () => {
     if (!selectedAcc) return alert('Seleccione una cuenta')
     try {
-      // Si el usuario proporcionó fechas, solicitar ese rango; si no, traer todos los movimientos disponibles
       const useDates = fechaInicio || fechaFin
       const resp = await getMovimientos(selectedAcc, fechaInicio || null, fechaFin || null)
-      // Mapear correctamente desde MovimientosResponse (MovimientoDetalle)
       const movsAll = (resp && resp.movimientos) ? resp.movimientos.map((m, i) => ({ 
         id: 'mv-'+i, 
         date: m.fechaHora ? m.fechaHora.split('T')[0] : '', 
@@ -28,7 +26,6 @@ export default function Movimientos(){
       if (useDates) {
         setTransactions(movsAll)
       } else {
-        // ordenar por fecha descendente y limitar a 10
         const sorted = movsAll.slice().sort((a,b)=> (b.date || '').localeCompare(a.date || ''))
         setTransactions(sorted.slice(0,10))
       }
@@ -37,7 +34,6 @@ export default function Movimientos(){
     }
   }
 
-  // Cargar movimientos automáticamente al entrar a la página
   useEffect(() => {
     if (selectedAcc) {
       loadMovements()

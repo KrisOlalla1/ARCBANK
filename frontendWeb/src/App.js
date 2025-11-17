@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      {/* SOLO mostrar el sidebar si NO estamos en login y el usuario está logueado */}
+      {}
       {loggedIn && !isLoginPage && <Sidebar />}
 
       <main className="main" style={{ width: "100%" }}>

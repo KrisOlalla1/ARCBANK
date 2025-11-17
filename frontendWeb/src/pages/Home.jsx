@@ -7,7 +7,6 @@ export default function Home(){
   const { state } = useAuth()
   const { setUserAccounts } = useAuth()
   
-  // Auto-cargar cuentas cuando el usuario tiene identificación
   useEffect(() => {
     const loadAccounts = async () => {
       const id = state.user && state.user.identificacion
@@ -21,7 +20,6 @@ export default function Home(){
         console.log('📡 Llamando a /api/cuentas/consolidada/' + id)
         const cuentas = await getConsolidada(id)
         console.log('✅ Cuentas recibidas:', cuentas)
-        // Mapear a formato local si es necesario
         const mapped = (cuentas || []).map(c => ({ 
           id: String(c.idCuenta), 
           number: c.numeroCuenta, 
@@ -35,7 +33,6 @@ export default function Home(){
       }
     }
     loadAccounts()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.user.identificacion])
   return (
     <div>

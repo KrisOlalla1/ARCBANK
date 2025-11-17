@@ -1,17 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
-// Base URL configurable para llamadas al backend. Defínela en el entorno de build:
-// REACT_APP_API_BASE_URL=https://your-backend-url.run.app
+
 export const API_BASE = (process.env.REACT_APP_API_BASE_URL || '').replace(/\/$/, '')
 
-// Helper fetch que normaliza la URL y aplica JSON headers por defecto.
 export async function apiFetch(path, options = {}) {
   const base = API_BASE || ''
   const url = path.startsWith('http') ? path : `${base}${path.startsWith('/') ? path : '/' + path}`
 
   const opts = {
     headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-    credentials: 'include', // permitir cookies si se necesita (ajusta según CORS)
+    credentials: 'include', 
     ...options
   }
 
@@ -58,7 +56,6 @@ export function AuthProvider({ children }) {
       saved.user.name = storedName
     }
 
-    // Leer identificación e idUsuarioWeb si ya se habían persistido
     const storedIdent = localStorage.getItem('namca_identificacion')
     const storedIdUsuarioWeb = localStorage.getItem('namca_idUsuarioWeb')
     if (storedIdent) saved.user.identificacion = storedIdent
@@ -74,21 +71,17 @@ export function AuthProvider({ children }) {
   }, [state])
 
   const login = async (username, password) => {
-    // Validación básica
     if (!username || !password) return { ok: false, error: 'Usuario y contraseña requeridos' }
 
     try {
-      // Llamada al backend usando el helper apiFetch.
       const body = await apiFetch('/api/usuarios/login', {
         method: 'POST',
         body: JSON.stringify({ nombreUsuario: username, clave: password })
       })
 
-      // Si la llamada fue exitosa, marcamos login localmente.
       localStorage.setItem('namca_logged', '1')
       localStorage.setItem('namca_username', username.toUpperCase())
 
-      // Obtener el perfil del usuario desde el backend
       let identificacion = null
       let idUsuarioWeb = null
       try {
@@ -96,20 +89,16 @@ export function AuthProvider({ children }) {
         if (perfil) {
           identificacion = perfil.identificacion || null
           idUsuarioWeb = perfil.idUsuario || null
-          // Guardar en localStorage para persistencia
           if (identificacion) localStorage.setItem('namca_identificacion', identificacion)
           if (idUsuarioWeb) localStorage.setItem('namca_idUsuarioWeb', String(idUsuarioWeb))
         }
       } catch (e) {
-        // no crítico si /me no responde
       }
 
-      // Actualizar estado con identificación e idUsuarioWeb
       setState(s => ({ ...s, user: { ...s.user, name: username.toUpperCase(), identificacion, idUsuarioWeb } }))
       setLoggedIn(true)
       return { ok: true, body }
     } catch (err) {
-      // err puede ser Error con .status y .body
       return { ok: false, error: err.body || err.message || 'Error de red' }
     }
   }
@@ -131,14 +120,12 @@ export function AuthProvider({ children }) {
     }))
   }
 
-  // Persistir identificación e idUsuarioWeb en localStorage (útil para evitar re-prompt)
   const persistIdentification = (identificacion, idUsuarioWeb) => {
     if (identificacion) localStorage.setItem('namca_identificacion', identificacion)
     if (idUsuarioWeb) localStorage.setItem('namca_idUsuarioWeb', String(idUsuarioWeb))
     updateUser({ identificacion, idUsuarioWeb })
   }
 
-  // Helper para reemplazar/actualizar cuentas del usuario en el estado global
   const setUserAccounts = (accounts) => {
     setState(s => ({ ...s, user: { ...s.user, accounts } }))
   }

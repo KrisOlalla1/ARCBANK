@@ -24,7 +24,6 @@ export default function Login() {
     const res = await login(user, pass)
     if (!res.ok) return setErr(res.error)
 
-    // Esperar un poco para que el estado se actualice y luego navegar
     setTimeout(() => navigate('/'), 100)
   }
 
@@ -44,9 +43,7 @@ export default function Login() {
       const resp = await apiFetch('/api/usuarios/registro', { method: 'POST', body: JSON.stringify(body) })
       setRegMsg('Registro exitoso')
       setShowRegister(false)
-      // prefijar el usuario en el input de login para facilitar prueba
       setUser(regUser)
-      // Guardar identificación e idUsuarioWeb en estado/localStorage para evitar pedirla luego
       try { persistIdentification(regId, resp && resp.idUsuario) } catch (e) { /* no crítico */ }
     } catch (e) {
       setRegMsg(e.body || e.message || 'Error en registro')

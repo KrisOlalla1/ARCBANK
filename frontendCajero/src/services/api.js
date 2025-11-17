@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:8082"; // URL del Backend Cajero
+// Usar variable de entorno para la URL base del API
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8082";
 
 async function request(path, options = {}) {
   const url = `${BASE_URL}${path}`;

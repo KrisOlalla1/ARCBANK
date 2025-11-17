@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { FiHome, FiList, FiLogOut } from "react-icons/fi"
-import { TbArrowsExchange } from "react-icons/tb"   // ← ICONO DE TRANSFERENCIA REAL
+import { TbArrowsExchange } from "react-icons/tb"   
 
 export default function Sidebar(){
   const { state, logout } = useAuth()
