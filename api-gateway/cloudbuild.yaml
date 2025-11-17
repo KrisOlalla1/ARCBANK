@@ -18,11 +18,20 @@ steps:
     - 'gcr.io/$PROJECT_ID/api-gateway-service'
     - '--region'
     - 'us-central1'
-    # El puerto que expone el gateway es el 8085
     - '--port'
     - '8085'
-    # ¡IMPORTANTE! Permitimos acceso público a este servicio
+    # Permitimos acceso público
     - '--allow-unauthenticated'
-    # Le damos permiso para que pueda invocar al cbs-service (que es privado)
-    - '--invoke-service'
+
+# Paso 4: Darle permiso al gateway para invocar al servicio core
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'run'
+    - 'services'
+    - 'add-iam-policy-binding'
     - 'cbs-service'
+    - '--region=us-central1'
+    # Obtenemos la "identidad" del gateway recién desplegado
+    - '--member=serviceAccount:$(gcloud run services describe api-gateway-service --region=us-central1 --format="value(status.latestCreatedRevision.serviceAccountName)")'
+    - '--role=roles/run.invoker'
