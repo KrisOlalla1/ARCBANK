@@ -86,6 +86,7 @@ export function AuthProvider({ children }) {
       let idUsuarioWeb = null
       try {
         const perfil = await apiFetch('/api/usuarios/me')
+        console.log('✅ Perfil obtenido:', perfil)
         if (perfil) {
           identificacion = perfil.identificacion || null
           idUsuarioWeb = perfil.idUsuario || null
@@ -93,6 +94,7 @@ export function AuthProvider({ children }) {
           if (idUsuarioWeb) localStorage.setItem('namca_idUsuarioWeb', String(idUsuarioWeb))
         }
       } catch (e) {
+        console.error('❌ Error obteniendo perfil:', e)
       }
 
       setState(s => ({ ...s, user: { ...s.user, name: username.toUpperCase(), identificacion, idUsuarioWeb } }))
