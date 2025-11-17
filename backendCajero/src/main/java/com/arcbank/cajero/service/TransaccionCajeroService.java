@@ -32,7 +32,6 @@ public class TransaccionCajeroService {
         Cajero cajero = cajeroRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cajero no encontrado: " + request.getIdCajero()));
 
-        // 1) Guardar PENDIENTE
         TransaccionCajero tx = new TransaccionCajero();
         tx.setNumeroCuenta(request.getNumeroCuenta());
         tx.setMonto(request.getMonto());
@@ -44,7 +43,6 @@ public class TransaccionCajeroService {
         tx.setCajero(cajero);
         tx = repository.save(tx);
 
-        // 2) Enviar al CORE
         TransaccionCoreRequest coreReq = new TransaccionCoreRequest();
         coreReq.setNumeroCuenta(tx.getNumeroCuenta());
         coreReq.setTipo(tx.getTipo());
@@ -55,7 +53,6 @@ public class TransaccionCajeroService {
 
         try {
             TransaccionCoreResponse coreResp = coreSyncService.enviar(coreReq);
-            // 3) Actualizar a SINCRONIZADA y balance
             tx.setEstado("SINCRONIZADA");
             tx.setBalance(coreResp != null ? coreResp.getBalance() : tx.getBalance());
             tx.setFechaHora(coreResp != null ? coreResp.getFechaHora() : tx.getFechaHora());
@@ -71,7 +68,6 @@ public class TransaccionCajeroService {
         Cajero cajero = cajeroRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cajero no encontrado: " + request.getIdCajero()));
 
-        // 1) Guardar PENDIENTE
         TransaccionCajero tx = new TransaccionCajero();
         tx.setNumeroCuenta(request.getNumeroCuenta());
         tx.setMonto(request.getMonto());
@@ -83,7 +79,6 @@ public class TransaccionCajeroService {
         tx.setCajero(cajero);
         tx = repository.save(tx);
 
-        // 2) Enviar al CORE
         TransaccionCoreRequest coreReq = new TransaccionCoreRequest();
         coreReq.setNumeroCuenta(tx.getNumeroCuenta());
         coreReq.setTipo(tx.getTipo());

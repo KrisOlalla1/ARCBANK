@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-/** Lightweight tracing filter to ensure every request carries a correlation id. */
 @Component
 public class RequestCorrelationFilter implements GlobalFilter, Ordered {
 
