@@ -91,7 +91,8 @@ public class UsuarioSistemaController {
             } catch (Exception ex) {
             }
 
-            return ResponseEntity.ok("Inicio de sesión exitoso");
+            // Devolver datos del usuario directamente en la respuesta
+            return ResponseEntity.ok(new UsuarioResponse(usuario, usuario.getIdentificacion()));
         } else {
             return ResponseEntity.badRequest().body("Contraseña incorrecta");
         }

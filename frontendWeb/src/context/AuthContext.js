@@ -82,20 +82,14 @@ export function AuthProvider({ children }) {
       localStorage.setItem('namca_logged', '1')
       localStorage.setItem('namca_username', username.toUpperCase())
 
-      let identificacion = null
-      let idUsuarioWeb = null
-      try {
-        const perfil = await apiFetch('/api/usuarios/me')
-        console.log('✅ Perfil obtenido:', perfil)
-        if (perfil) {
-          identificacion = perfil.identificacion || null
-          idUsuarioWeb = perfil.idUsuario || null
-          if (identificacion) localStorage.setItem('namca_identificacion', identificacion)
-          if (idUsuarioWeb) localStorage.setItem('namca_idUsuarioWeb', String(idUsuarioWeb))
-        }
-      } catch (e) {
-        console.error('❌ Error obteniendo perfil:', e)
-      }
+      // Extraer datos directamente de la respuesta del login
+      const identificacion = body?.identificacion || null
+      const idUsuarioWeb = body?.idUsuario || null
+      
+      console.log('✅ Login exitoso, datos:', { identificacion, idUsuarioWeb })
+      
+      if (identificacion) localStorage.setItem('namca_identificacion', identificacion)
+      if (idUsuarioWeb) localStorage.setItem('namca_idUsuarioWeb', String(idUsuarioWeb))
 
       setState(s => ({ ...s, user: { ...s.user, name: username.toUpperCase(), identificacion, idUsuarioWeb } }))
       setLoggedIn(true)
