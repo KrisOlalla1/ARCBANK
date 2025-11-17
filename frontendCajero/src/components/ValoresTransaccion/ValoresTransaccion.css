@@ -1,0 +1,272 @@
+.retiro-page {
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+
+.retiro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 40px;
+  border-bottom: 1px solid #ddd;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.rh-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rh-logo {
+  height: 45px;
+}
+
+.rh-cajero {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rh-user-icon {
+  width: 36px;
+  height: 36px;
+  background: #ffb300;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rh-user-icon i {
+  color: #000;
+  font-size: 18px;
+}
+
+.rh-cajero-name {
+  font-weight: 600;
+}
+
+.rh-center {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.rh-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.rh-link {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rh-link i {
+  font-size: 16px;
+}
+
+
+.retiro-main {
+  padding: 25px 80px;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.cedula-row {
+  margin-bottom: 35px;
+}
+
+.cedula-label {
+  display: block;
+  margin-bottom: 30px;
+  font-size: 25px;
+}
+
+.cedula-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cedula-input {
+  flex: 1;
+  border-radius: 30px;
+  border: 1px solid #f0b201;
+  padding: 10px 28px;
+  font-size: 14px;
+}
+
+.btn-buscar {
+  background: #ffb300;
+  border: none;
+  padding: 10px 45px;     
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  min-width: 140px;      
+  transition: 0.2s;
+}
+.btn-buscar:hover {
+  background: #e09f00;
+}
+
+
+.retiro-panel {
+  margin-top: 12px;
+  background: #d7d7d7;
+  border-radius: 18px;
+  padding: 25px 45px;
+  display: flex;
+  gap: 40px;
+  align-items: stretch;
+}
+
+.retiro-left,
+.retiro-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.retiro-left {
+   flex: 0 0 48%;                
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.retiro-right {
+   flex: 0 0 30%;                
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 10px; 
+}
+
+.retiro-divider {
+  flex: 0 0 1px;               
+  background: #bcbcbc;          
+  margin: 0 25px;
+}
+
+
+.retiro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 14px;
+}
+
+.field-input {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #c3c3c3;
+  font-size: 14px;
+  background: #f4f4f4;
+}
+
+.monto-input {
+  background: #ffffff;
+}
+
+
+.retiro-error {
+  margin-top: 12px;
+  color: #b71c1c;
+}
+
+
+.retiro-buttons {
+  width: 1660px;
+  display: flex;
+  justify-content: center;   
+  gap: 30px;
+  margin-top: 45px;
+}
+
+.btn-amarillo {
+  background: #ffb300;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: linear-gradient(180deg, #ffb300, #f08c00);
+}
+
+
+
+.deposito-page .deposit-panel {
+  width: 1100px;     
+  max-width: 95%;    
+  margin: 0 auto;    
+  background: #d7d7d7;
+  border-radius: 18px;
+  padding: 30px 50px 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+.deposit-top-row {
+   display: flex;
+  align-items: stretch; 
+  width: 100%;
+  min-height: 240px; 
+}
+
+
+.deposit-col {
+ flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%; 
+}
+
+
+.deposit-divider {
+  width: 2px;
+  background: #909090;
+  margin: 0 35px;
+  align-self: stretch;      
+  opacity: 1;
+}
+
+
+.deposit-monto-row {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.deposit-monto-row .monto-input {
+  width: 160px;
+  background: #ffffff;
+}
+
+
+.deposit-buttons-row {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
