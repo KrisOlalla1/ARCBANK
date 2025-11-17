@@ -1,50 +1,96 @@
 # DOCUMENTACIÓN COMPLETA - SISTEMA BANCARIO ARCBANK
 
-## ARQUITECTURA DEL SISTEMA
+## 🌐 ACCESO PÚBLICO - APLICACIONES EN LA NUBE
 
-### Componentes Principales
+### ✅ URLs de Producción en Google Cloud Run
+
+**APLICACIONES PÚBLICAS (Accesibles desde cualquier lugar del mundo):**
+
+- **🏦 Banca Web (Clientes):** https://bancaweb-frontend-845403368692.us-central1.run.app
+- **🏧 Cajero Automático:** https://cajero-frontend-845403368692.us-central1.run.app
+
+**SERVICIOS BACKEND (No acceder directamente, solo para desarrollo):**
+- **API Gateway:** https://api-gateway-service-845403368692.us-central1.run.app
+- **Backend Core:** https://cbs-service-845403368692.us-central1.run.app
+- **Backend Web:** https://bancaweb-service-845403368692.us-central1.run.app
+- **Backend Cajero:** https://cajero-service-845403368692.us-central1.run.app
+
+---
+
+## 🔑 CREDENCIALES DE ACCESO PARA PRUEBAS
+
+### Banca Web (Usuario Cliente)
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    FRONTEND LAYER                            │
-├──────────────────────┬──────────────────────────────────────┤
-│ Frontend Web (React) │ Frontend Cajero (React + Vite)       │
-│ Puerto: 3000         │ Puerto: 3001                         │
-└──────────────────────┴──────────────────────────────────────┘
+Usuario: jperez
+Contraseña: pass123
+```
+
+**O crear un nuevo usuario desde el frontend**
+
+### Cajero Automático
+```
+Usuario: cajero1
+Contraseña: clave123
+```
+
+### Cuentas de Prueba Disponibles
+```
+Número de Cuenta: 100100000001
+Cliente: Carlos Andrés Morales Vega
+Cédula: 1724589630
+Tipo: PERSONAL (Ahorro/Corriente)
+Saldo: $4250.00
+```
+
+---
+
+## 🏗️ ARQUITECTURA DEL SISTEMA EN GOOGLE CLOUD
+
+### Componentes Desplegados
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    INTERNET (Público)                            │
+│          Accesible desde cualquier lugar del mundo               │
+└─────────────────────────────────────────────────────────────────┘
                               ↓
-┌─────────────────────────────────────────────────────────────┐
-│                    BACKEND LAYER                             │
-├──────────────────────┬──────────────────────────────────────┤
-│ Backend Web          │ Backend Cajero                       │
-│ Puerto: 8081         │ Puerto: 8082                         │
-└──────────────────────┴──────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    GOOGLE CLOUD RUN                              │
+│                    Region: us-central1                           │
+├──────────────────────┬──────────────────────────────────────────┤
+│ Frontend Web (React) │ Frontend Cajero (React + Vite)           │
+│ Nginx Alpine         │ Nginx Alpine                             │
+│ Puerto: 80           │ Puerto: 80                               │
+└──────────────────────┴──────────────────────────────────────────┘
                               ↓
-┌─────────────────────────────────────────────────────────────┐
-│                    API GATEWAY                               │
-│                    Puerto: 8085                              │
-│  Rutas:                                                      │
-│  /cbs/** → Core:8080                                        │
-│  /bancaweb/** → Web:8081                                    │
-│  /cajero/** → Cajero:8082                                   │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    API GATEWAY (Cloud Run)                       │
+│                    Puerto: 8080                                  │
+│  Spring Cloud Gateway con CORS configurado                       │
+│  Rutas:                                                          │
+│  /cbs/** → Backend Core                                         │
+│  /bancaweb/** → Backend Web                                     │
+│  /cajero/** → Backend Cajero                                    │
+└─────────────────────────────────────────────────────────────────┘
                               ↓
-┌─────────────────────────────────────────────────────────────┐
-│                    BACKEND CORE                              │
-│                    Puerto: 8080                              │
-│  Endpoints principales:                                      │
-│  - POST /api/core/transacciones                             │
-│  - GET /api/core/consultas/posicion-consolidada/{id}       │
-│  - GET /api/core/consultas/movimientos/{numeroCuenta}      │
-│  - GET /api/core/consultas/cuenta/{numeroCuenta}           │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│              BACKENDS (Cloud Run - Java 21)                      │
+├──────────────────────┬──────────────────────┬──────────────────┤
+│ Backend Core         │ Backend Web          │ Backend Cajero   │
+│ Puerto: 8080         │ Puerto: 8080         │ Puerto: 8080     │
+│ Spring Boot 3.5.7    │ Spring Boot 3.5.7    │ Spring Boot 3.5.7│
+└──────────────────────┴──────────────────────┴──────────────────┘
                               ↓
-┌─────────────────────────────────────────────────────────────┐
-│                    DATABASE LAYER                            │
-│              PostgreSQL 16 - Puerto 5433                     │
-├──────────────────────┬──────────────────────┬───────────────┤
-│ DB: core             │ DB: bancaweb         │ DB: cajero_db │
-│ Usuario: postgres    │ Usuario: postgres    │ User: postgres│
-│ Password: 123        │ Password: 123        │ Pass: 123     │
-└──────────────────────┴──────────────────────┴───────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    CLOUD SQL (PostgreSQL)                        │
+│  Instance: arcbank-db-instance                                   │
+│  Region: us-central1                                             │
+│  Connection: aqueous-depth-478400-k3:us-central1:arcbank-db-...│
+├──────────────────────┬──────────────────────┬──────────────────┤
+│ DB: core             │ DB: bancaweb         │ DB: cajero_db    │
+│ Usuario: postgres    │ Usuario: postgres    │ Usuario: postgres│
+│ Password: Arqui123@  │ Password: Arqui123@  │ Password: Arqui123@│
+│ Tablas PascalCase    │ Tablas PascalCase    │ Tablas PascalCase│
+└──────────────────────┴──────────────────────┴──────────────────┘
 ```
 
 ---
@@ -753,6 +799,524 @@ Frontend Cajero: http://localhost:3001
 
 ---
 
+## 🚀 DEPLOYMENT EN GOOGLE CLOUD - GUÍA COMPLETA
+
+### Requisitos Previos
+- Cuenta de Google Cloud Platform
+- Proyecto creado: `aqueous-depth-478400-k3`
+- Cloud SQL activado
+- Cloud Run activado
+- Cloud Build activado
+- Repositorio GitHub: https://github.com/KrisOlalla1/ARCBANK
+
+---
+
+### PASO 1: Configurar Cloud SQL PostgreSQL
+
+#### 1.1 Crear Instancia Cloud SQL
+```bash
+# En Google Cloud Console o Cloud Shell
+gcloud sql instances create arcbank-db-instance \
+  --database-version=POSTGRES_16 \
+  --tier=db-f1-micro \
+  --region=us-central1 \
+  --root-password=Arqui123@
+```
+
+**Connection Name:** `aqueous-depth-478400-k3:us-central1:arcbank-db-instance`
+
+#### 1.2 Crear las 3 Bases de Datos
+```bash
+# Conectarse a Cloud SQL
+gcloud sql connect arcbank-db-instance --user=postgres
+
+# Dentro de psql:
+CREATE DATABASE core;
+CREATE DATABASE bancaweb;
+CREATE DATABASE cajero_db;
+```
+
+#### 1.3 Poblar las Bases de Datos
+Ejecutar los scripts SQL en orden:
+1. `backendCore/test-data.sql` → en database `core`
+2. Scripts de `backendWeb` → en database `bancaweb`
+3. Scripts de `backendCajero` → en database `cajero_db`
+
+**IMPORTANTE:** Las tablas deben crearse con **PascalCase** (ej: `"Cliente"`, `"CuentaAhorro"`)
+
+---
+
+### PASO 2: Configurar Backends para Cloud SQL
+
+#### 2.1 Configuración application.properties
+
+**backendCore/src/main/resources/application.properties:**
+```properties
+server.port=8080
+
+# Cloud SQL Configuration
+spring.datasource.url=jdbc:postgresql://google/core?cloudSqlInstance=aqueous-depth-478400-k3:us-central1:arcbank-db-instance&socketFactory=com.google.cloud.sql.postgres.SocketFactory
+spring.datasource.username=postgres
+spring.datasource.password=Arqui123@
+
+# JPA Configuration - PRESERVAR PASCALCASE
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+```
+
+**Aplicar lo mismo para backendWeb y backendCajero** (cambiando el nombre de la base de datos)
+
+#### 2.2 Agregar Dependencia Socket Factory en pom.xml
+
+**En todos los backends (backendCore, backendWeb, backendCajero):**
+```xml
+<dependencies>
+    <!-- PostgreSQL Driver -->
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+    
+    <!-- Cloud SQL Socket Factory - DEBE IR AQUÍ -->
+    <dependency>
+        <groupId>com.google.cloud.sql</groupId>
+        <artifactId>postgres-socket-factory</artifactId>
+        <version>1.18.1</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    <!-- ... otras dependencias ... -->
+</dependencies>
+```
+
+---
+
+### PASO 3: Crear Dockerfiles
+
+#### 3.1 Dockerfile para Backends (Java)
+
+**Ejemplo: backendCore/Dockerfile**
+```dockerfile
+FROM eclipse-temurin:21-jdk-alpine AS build
+WORKDIR /app
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
+COPY src ./src
+RUN ./mvnw clean package -DskipTests
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+**Aplicar igual para backendWeb, backendCajero y api-gateway**
+
+#### 3.2 Dockerfile para Frontends (React)
+
+**frontendWeb/Dockerfile:**
+```dockerfile
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+**frontendCajero/Dockerfile:**
+```dockerfile
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+#### 3.3 nginx.conf para Frontends
+```nginx
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+---
+
+### PASO 4: Crear cloudbuild.yaml
+
+#### 4.1 Backend cloudbuild.yaml
+
+**Ejemplo: backendCore/cloudbuild.yaml**
+```yaml
+steps:
+  # Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/cbs:latest'
+      - '.'
+
+  # Push to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/cbs:latest'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'cbs-service'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/cbs:latest'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--add-cloudsql-instances'
+      - 'aqueous-depth-478400-k3:us-central1:arcbank-db-instance'
+
+images:
+  - 'gcr.io/$PROJECT_ID/cbs:latest'
+```
+
+**Aplicar similar para:**
+- `backendWeb/cloudbuild.yaml` → service: `bancaweb-service`
+- `backendCajero/cloudbuild.yaml` → service: `cajero-service`
+- `api-gateway/cloudbuild.yaml` → service: `api-gateway-service`
+
+#### 4.2 Frontend cloudbuild.yaml
+
+**frontendWeb/cloudbuild.yaml:**
+```yaml
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/bancaweb-frontend:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/bancaweb-frontend:latest'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'bancaweb-frontend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/bancaweb-frontend:latest'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+
+images:
+  - 'gcr.io/$PROJECT_ID/bancaweb-frontend:latest'
+```
+
+**Aplicar similar para frontendCajero**
+
+---
+
+### PASO 5: Configurar CORS en API Gateway
+
+**api-gateway/src/main/java/com/arcbank/gateway/config/CorsConfig.java:**
+```java
+package com.arcbank.gateway.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+
+@Configuration
+public class CorsConfig {
+
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOriginPattern("*");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsWebFilter(source);
+    }
+}
+```
+
+**IMPORTANTE:** Remover cualquier configuración CORS de los backends (backendWeb, backendCajero) para evitar headers duplicados.
+
+---
+
+### PASO 6: Solucionar Problema de Cookies Cross-Domain
+
+#### 6.1 Modificar Login para Retornar Datos Directamente
+
+**backendWeb/.../controller/UsuarioSistemaController.java:**
+```java
+@PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    Optional<UsuarioSistema> optional = service.autenticar(
+        request.getUsuario(),
+        request.getClave()
+    );
+
+    if (optional.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body("Credenciales inválidas");
+    }
+
+    UsuarioSistema usuario = optional.get();
+    
+    // Retornar usuario completo con identificacion
+    return ResponseEntity.ok(new UsuarioResponse(
+        usuario.getIdUsuario(),
+        usuario.getNombreUsuario(),
+        usuario.getIdentificacion(),
+        usuario.getIdSucursal()
+    ));
+}
+```
+
+#### 6.2 Actualizar Frontend para No Llamar /me
+
+**frontendWeb/src/context/AuthContext.js:**
+```javascript
+const login = async (username, password) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/usuarios/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario: username, clave: password }),
+    });
+
+    if (!response.ok) throw new Error('Login failed');
+
+    const body = await response.json();
+    
+    // Extraer datos directamente de la respuesta
+    const identificacion = body?.identificacion || null;
+    const idUsuarioWeb = body?.idUsuario || null;
+
+    setUser({ username, identificacion, idUsuarioWeb });
+    localStorage.setItem('username', username);
+    localStorage.setItem('identificacion', identificacion);
+    localStorage.setItem('idUsuarioWeb', idUsuarioWeb);
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+};
+```
+
+---
+
+### PASO 7: Configurar Variables de Entorno
+
+#### 7.1 Frontend Web
+**frontendWeb/.env.production:**
+```env
+REACT_APP_API_BASE_URL=https://api-gateway-service-845403368692.us-central1.run.app/bancaweb
+```
+
+#### 7.2 Frontend Cajero
+**frontendCajero/.env.production:**
+```env
+VITE_API_BASE_URL=https://api-gateway-service-845403368692.us-central1.run.app/cajero
+```
+
+---
+
+### PASO 8: Desplegar los Servicios
+
+#### 8.1 Workflow de Deployment
+
+**En tu máquina local:**
+```bash
+# 1. Hacer cambios en el código
+# 2. Commit y push a GitHub
+git add .
+git commit -m "Descripción de cambios"
+git push origin main
+```
+
+**En Google Cloud Shell:**
+```bash
+# 1. Clonar/actualizar repositorio
+cd ~
+git clone https://github.com/KrisOlalla1/ARCBANK.git
+cd ARCBANK
+git pull  # Si ya existe
+
+# 2. Desplegar servicios en orden
+# IMPORTANTE: Desplegar en este orden
+
+# Backend Core primero
+cd backendCore
+gcloud builds submit --config cloudbuild.yaml
+cd ..
+
+# Luego Backend Web y Cajero
+cd backendWeb
+gcloud builds submit --config cloudbuild.yaml
+cd ../backendCajero
+gcloud builds submit --config cloudbuild.yaml
+cd ..
+
+# API Gateway
+cd api-gateway
+gcloud builds submit --config cloudbuild.yaml
+cd ..
+
+# Finalmente los Frontends
+cd frontendWeb
+gcloud builds submit --config cloudbuild.yaml
+cd ../frontendCajero
+gcloud builds submit --config cloudbuild.yaml
+```
+
+#### 8.2 Verificar Deployment
+```bash
+# Listar servicios desplegados
+gcloud run services list --region=us-central1
+
+# Ver logs de un servicio
+gcloud run services logs read cbs-service --region=us-central1
+
+# Ver detalles de un servicio
+gcloud run services describe cbs-service --region=us-central1
+```
+
+---
+
+### PASO 9: Probar las Aplicaciones
+
+#### 9.1 Acceder a Banca Web
+1. Abrir: https://bancaweb-frontend-845403368692.us-central1.run.app
+2. Login con: `jperez` / `pass123`
+3. Verificar que carguen las cuentas
+4. Probar transferencias
+
+#### 9.2 Acceder a Cajero
+1. Abrir: https://cajero-frontend-845403368692.us-central1.run.app
+2. Login con: `cajero1` / `clave123`
+3. Probar depósito con cuenta: `100100000001`
+4. Probar retiro con la misma cuenta
+
+---
+
+### PROBLEMAS COMUNES Y SOLUCIONES
+
+#### Error: "relation does not exist"
+**Causa:** Hibernate convirtiendo nombres a minúsculas
+**Solución:**
+```properties
+spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+```
+
+#### Error: ClassNotFoundException SocketFactory
+**Causa:** Falta dependencia en pom.xml
+**Solución:** Agregar `postgres-socket-factory:1.18.1` ENTRE postgresql y lombok
+
+#### Error: 403 Forbidden
+**Causa:** Servicios privados
+**Solución:** Agregar `--allow-unauthenticated` en cloudbuild.yaml
+
+#### Error: 405 Method Not Allowed
+**Causa:** Falta CORS en Gateway
+**Solución:** Crear CorsWebFilter en api-gateway (NO CorsFilter, debe ser reactivo)
+
+#### Error: Duplicate Access-Control-Allow-Origin
+**Causa:** CORS configurado en Gateway Y en backends
+**Solución:** Eliminar CORS de todos los backends, dejar SOLO en Gateway
+
+#### Error: 401 Unauthorized en /api/usuarios/me
+**Causa:** Cookies cross-domain no funcionan
+**Solución:** Login debe retornar datos directamente, no llamar a /me después
+
+---
+
+### COSTOS ESTIMADOS
+
+**Cloud Run (con uso moderado):**
+- Backends (4 servicios): ~$5-10/mes
+- Frontends (2 servicios): ~$2-5/mes
+
+**Cloud SQL:**
+- db-f1-micro: ~$7/mes
+- db-custom-1-3840 (recomendado para producción): ~$50/mes
+
+**Storage (Container Registry):** ~$1-2/mes
+
+**Total estimado (desarrollo):** $15-25/mes
+**Total estimado (producción):** $60-100/mes
+
+---
+
+### MIGRACIÓN FUTURA A KUBERNETES (OPCIONAL)
+
+Si el proyecto crece, se puede migrar a Google Kubernetes Engine (GKE):
+
+1. Usar los mismos Dockerfiles
+2. Crear manifiestos de Kubernetes (Deployments, Services, Ingress)
+3. Configurar autoscaling
+4. Implementar service mesh (Istio)
+
+---
+
 ## TROUBLESHOOTING COMÚN
 
 ### Error: "Cannot read properties of undefined"
@@ -761,11 +1325,15 @@ Frontend Cajero: http://localhost:3001
 
 ### Error: CORS
 **Causa:** Frontend llamando directamente al Core sin pasar por Gateway
-**Solución:** Cambiar URLs para usar Gateway en puerto 8085
+**Solución:** 
+- Cambiar URLs para usar Gateway
+- Verificar que CORS esté SOLO en Gateway
+- Usar CorsWebFilter (reactivo) no CorsFilter
 
 ### Error: "No existe la relación"
 **Causa:** Nombres de tablas con/sin comillas en PostgreSQL
 **Solución:** Usar comillas dobles: `"CuentaAhorro"`, `"Persona"`, etc.
+**En application.properties:** globally_quoted_identifiers=true
 
 ### Transacción no aparece en movimientos
 **Causa:** Posible falta de sincronización entre bases
@@ -775,9 +1343,198 @@ Frontend Cajero: http://localhost:3001
 **Causa:** Identificación incorrecta en usuariosistema
 **Solución:** Actualizar `identificacion` en bancaweb.usuariosistema para que coincida con core.Cliente.Identificacion
 
+### Build falla en Cloud Build
+**Causa:** Timeout o recursos insuficientes
+**Solución:** 
+```bash
+gcloud builds submit --config cloudbuild.yaml --timeout=20m
+```
+
+### Frontend muestra página en blanco
+**Causa:** Error de compilación o rutas incorrectas
+**Solución:**
+- Verificar logs: `gcloud run services logs read [SERVICE_NAME]`
+- Verificar que nginx.conf tenga `try_files $uri $uri/ /index.html;`
+
 ---
 
-## MIGRACIÓN A GOOGLE CLOUD
+## 🌍 ACCESO PÚBLICO Y SEGURIDAD
+
+### ¿Quién puede acceder?
+
+✅ **SÍ - Las aplicaciones son completamente públicas:**
+- Cualquier persona desde cualquier país
+- Desde cualquier dispositivo (PC, móvil, tablet)
+- No requiere VPN ni configuración especial
+- Solo necesitan internet y un navegador
+
+### URLs Públicas Activas:
+- **Banca Web:** https://bancaweb-frontend-845403368692.us-central1.run.app
+- **Cajero:** https://cajero-frontend-845403368692.us-central1.run.app
+
+### Seguridad Actual:
+- ✅ HTTPS (SSL/TLS automático por Cloud Run)
+- ✅ Autenticación de usuarios (login requerido)
+- ✅ Headers de seguridad en nginx
+- ❌ NO hay rate limiting (pendiente para producción)
+- ❌ NO hay WAF (pendiente para producción)
+
+### Recomendaciones para Producción:
+1. Implementar Cloud Armor (WAF)
+2. Configurar rate limiting
+3. Agregar monitoreo con Cloud Monitoring
+4. Implementar alertas
+5. Configurar backups automáticos de Cloud SQL
+6. Usar Secret Manager para credenciales
+
+---
+
+## 📊 MONITOREO Y LOGS
+
+### Ver logs en tiempo real:
+```bash
+# Logs de un servicio específico
+gcloud run services logs read bancaweb-frontend --region=us-central1 --limit=50
+
+# Logs de Cloud SQL
+gcloud sql operations list --instance=arcbank-db-instance
+
+# Seguir logs en vivo
+gcloud run services logs tail cbs-service --region=us-central1
+```
+
+### Métricas en Cloud Console:
+1. Ir a Cloud Run → Seleccionar servicio
+2. Ver tab "METRICS"
+3. Revisar:
+   - Request count
+   - Request latency
+   - Container CPU/Memory utilization
+   - Billable instance time
+
+---
+
+## 🔄 WORKFLOW DE DESARROLLO
+
+### Desarrollo Local → Producción
+
+1. **Desarrollar localmente:**
+```bash
+# Iniciar servicios locales
+docker-compose up -d postgres
+# Iniciar backends en IntelliJ/Eclipse
+# Iniciar frontends con npm start
+```
+
+2. **Probar cambios localmente**
+
+3. **Commit y push a GitHub:**
+```bash
+git add .
+git commit -m "Descripción del cambio"
+git push origin main
+```
+
+4. **Desplegar a Cloud:**
+```bash
+# En Cloud Shell
+cd ~/ARCBANK
+git pull
+cd [servicio-modificado]
+gcloud builds submit --config cloudbuild.yaml
+```
+
+5. **Verificar en producción:**
+- Abrir URL del servicio
+- Revisar logs si hay errores
+- Probar funcionalidad
+
+---
+
+## 📝 NOTAS IMPORTANTES PARA EL EQUIPO
+
+### Credenciales NO Commitear:
+- ❌ NO subir archivos `.env` con credenciales reales
+- ❌ NO hardcodear passwords en el código
+- ✅ Usar variables de entorno
+- ✅ Usar Secret Manager para producción
+
+### Antes de Modificar Código:
+1. ✅ Hacer `git pull` para tener última versión
+2. ✅ Crear branch para features grandes
+3. ✅ Probar localmente antes de desplegar
+4. ✅ Revisar logs después del deploy
+
+### Estructura de Commits:
+```
+feat: Nueva funcionalidad de transferencias
+fix: Corregir error en retiro de cajero
+refactor: Mejorar estructura de CorsConfig
+docs: Actualizar documentación de deployment
+```
+
+### Contacto en Caso de Problemas:
+- Revisar primero esta documentación
+- Verificar logs en Cloud Console
+- Revisar GitHub Issues del proyecto
+- Contactar al equipo de desarrollo
+
+---
+
+## 🎯 FUNCIONALIDADES ACTUALES
+
+### ✅ Banca Web (100% Funcional)
+- Login de usuarios
+- Visualización de cuentas
+- Consulta de movimientos
+- Transferencias entre cuentas
+- Datos de perfil
+
+### ✅ Cajero Automático (100% Funcional)
+- Login de cajeros
+- Búsqueda de cuentas por número
+- Depósitos
+- Retiros
+- Generación de comprobantes
+
+### 🔧 Backend Core
+- Gestión de clientes
+- Gestión de cuentas
+- Procesamiento de transacciones
+- Consultas de saldos y movimientos
+- Sincronización entre sistemas
+
+---
+
+## 🚀 PRÓXIMAS MEJORAS SUGERIDAS
+
+### Seguridad:
+- [ ] Implementar JWT tokens
+- [ ] Agregar refresh tokens
+- [ ] Configurar Cloud Armor
+- [ ] Implementar rate limiting
+- [ ] Usar Secret Manager
+
+### Funcionalidades:
+- [ ] Notificaciones por email
+- [ ] Dashboard de administración
+- [ ] Reportes y estadísticas
+- [ ] Soporte para múltiples monedas
+- [ ] Integración con pasarelas de pago
+
+### Infraestructura:
+- [ ] CI/CD automático con GitHub Actions
+- [ ] Staging environment
+- [ ] Backups automáticos programados
+- [ ] Monitoreo con alertas
+- [ ] Disaster recovery plan
+
+---
+
+**Última actualización:** 17 de Noviembre de 2025
+**Estado:** ✅ Producción - Totalmente funcional
+**Región:** us-central1 (Google Cloud)
+**Disponibilidad:** 24/7 - Acceso global
 
 ### Preparación
 1. **Cambiar configuraciones de localhost a IPs/dominios reales**
