@@ -29,4 +29,4 @@ steps:
   args:
   - '-c'
   # El comando completo va en una sola línea para que bash lo interprete
-  - 'gcloud run services add-iam-policy-binding cbs-service --region=us-central1 --member="serviceAccount:$$(gcloud run services describe api-gateway-service --region=us-central1 --format=''value(status.latestCreatedRevision.serviceAccountName)'')" --role="roles/run.invoker"'
+  - 'gcloud run services add-iam-policy-binding cbs-service --region=us-central1 --member=$$(gcloud run services describe api-gateway-service --region=us-central1 --format="value(status.identity)") --role="roles/run.invoker"'
