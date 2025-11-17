@@ -23,7 +23,8 @@ spring:
                 name: bancawebCircuitBreaker
                 fallbackUri: forward:/fallback/bancaweb
         - id: cbs-service
-          uri: http://localhost:8080
+          # ¡IMPORTANTE! Apuntamos a la URL del servicio Cloud Run
+          uri: https://cbs-service-845403368692.us-central1.run.app
           predicates:
             - Path=/cbs/**
           filters:

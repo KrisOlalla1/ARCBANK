@@ -1,0 +1,28 @@
+steps:
+# Paso 1: Construir la imagen Docker para el api-gateway
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/api-gateway-service', '.']
+
+# Paso 2: Empujar la imagen al registro
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/api-gateway-service']
+
+# Paso 3: Desplegar en Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'run'
+    - 'deploy'
+    - 'api-gateway-service'
+    - '--image'
+    - 'gcr.io/$PROJECT_ID/api-gateway-service'
+    - '--region'
+    - 'us-central1'
+    # El puerto que expone el gateway es el 8085
+    - '--port'
+    - '8085'
+    # ¡IMPORTANTE! Permitimos acceso público a este servicio
+    - '--allow-unauthenticated'
+    # Le damos permiso para que pueda invocar al cbs-service (que es privado)
+    - '--invoke-service'
+    - 'cbs-service'
