@@ -39,28 +39,6 @@ spring:
               args:
                 name: cbsCircuitBreaker
                 fallbackUri: forward:/fallback/cbs
-      globalcors:
-        add-to-simple-url-handler-mapping: true
-        corsConfigurations:
-          '[/**]':
-            # Orígenes permitidos: localhost para desarrollo y Cloud Run para producción
-            allowedOrigins:
-              - "http://localhost:3000"
-              - "http://localhost:5173"
-              - "https://bancaweb-frontend-845403368692.us-central1.run.app"
-              - "https://cajero-frontend-845403368692.us-central1.run.app"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - PATCH
-              - OPTIONS
-            allowedHeaders: "*"
-            exposedHeaders:
-              - "Authorization"
-              - "X-Total-Count"
-            allowCredentials: true
 server:
   port: 8085
 management:
