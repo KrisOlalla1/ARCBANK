@@ -20,6 +20,6 @@ steps:
     - 'us-central1'
     - '--port'
     - '8080'
-    - '--no-allow-unauthenticated'
+    - '--allow-unauthenticated'
     - '--add-cloudsql-instances'
     - 'aqueous-depth-478400-k3:us-central1:arcbank-db-instance'
