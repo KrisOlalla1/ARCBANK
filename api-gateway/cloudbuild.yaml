@@ -1,5 +1,5 @@
 steps:
-# Paso 1: Construir la imagen Docker para el api-gateway
+# Paso 1: Construir la imagen Docker
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/api-gateway-service', '.']
 
@@ -20,18 +20,13 @@ steps:
     - 'us-central1'
     - '--port'
     - '8085'
-    # Permitimos acceso público
     - '--allow-unauthenticated'
 
 # Paso 4: Darle permiso al gateway para invocar al servicio core
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
+  # Usamos bash para poder ejecutar el sub-comando
+  entrypoint: 'bash'
   args:
-    - 'run'
-    - 'services'
-    - 'add-iam-policy-binding'
-    - 'cbs-service'
-    - '--region=us-central1'
-    # Obtenemos la "identidad" del gateway recién desplegado
-    - '--member=serviceAccount:$(gcloud run services describe api-gateway-service --region=us-central1 --format="value(status.latestCreatedRevision.serviceAccountName)")'
-    - '--role=roles/run.invoker'
+  - '-c'
+  # El comando completo va en una sola línea para que bash lo interprete
+  - 'gcloud run services add-iam-policy-binding cbs-service --region=us-central1 --member="serviceAccount:$$(gcloud run services describe api-gateway-service --region=us-central1 --format=''value(status.latestCreatedRevision.serviceAccountName)'')" --role="roles/run.invoker"'
