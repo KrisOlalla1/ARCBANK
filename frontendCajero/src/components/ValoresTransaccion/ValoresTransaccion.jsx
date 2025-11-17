@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cuentas, transacciones } from "../../services/api"; 
-import logo from "../../assets/logo.png";
+import { transacciones } from "../../services/api";
+import logo from "../../assets/Logo.png";
 import "./ValoresTransaccion.css";
 
 export default function ValoresTransaccion() {

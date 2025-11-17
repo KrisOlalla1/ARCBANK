@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { jsPDF } from "jspdf";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/Logo.png";
 import "./Comprobante.css";
 
 export default function Comprobante() {

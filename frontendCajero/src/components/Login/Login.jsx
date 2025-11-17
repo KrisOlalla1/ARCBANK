@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../services/api";
 import "./Login.css";
 
-import logo from "../../assets/logo.png";
+import logo from "../../assets/Logo.png";
 import sideImg from "../../assets/login-side.png";
 
 export default function Login() {
