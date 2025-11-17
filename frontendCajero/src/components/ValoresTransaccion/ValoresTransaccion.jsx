@@ -30,6 +30,7 @@ export default function ValoresTransaccion() {
 
   const buscarCuenta = async () => {
     setError("");
+    console.log("🔍 Buscando cuenta:", numeroCuenta);
 
     
     if (!numeroCuenta || numeroCuenta.length !== 12) {
@@ -38,7 +39,9 @@ export default function ValoresTransaccion() {
     }
 
     try {
+      console.log("📞 Llamando a cuentas.getCuenta con:", numeroCuenta);
       const data = await cuentas.getCuenta(numeroCuenta);
+      console.log("✅ Respuesta de cuenta:", data);
 
      
       setCliente({
@@ -48,6 +51,7 @@ export default function ValoresTransaccion() {
         tipoCuenta: data.tipoCuenta || "",
       });
     } catch (e) {
+      console.error("❌ Error buscando cuenta:", e);
       setCliente({
         nombres: "",
         apellidos: "",
