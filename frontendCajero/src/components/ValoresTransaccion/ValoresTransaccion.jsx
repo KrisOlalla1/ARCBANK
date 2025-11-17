@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { transacciones } from "../../services/api";
+import { transacciones, cuentas } from "../../services/api";
 import logo from "../../assets/Logo.png";
 import "./ValoresTransaccion.css";
 
