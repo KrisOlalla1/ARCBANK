@@ -43,11 +43,12 @@ spring:
         add-to-simple-url-handler-mapping: true
         corsConfigurations:
           '[/**]':
-            # Para desarrollo local asegurar que el origen del frontend esté explícito
-            # Evitar '*' cuando allowCredentials: true para que el navegador acepte la cabecera
+            # Orígenes permitidos: localhost para desarrollo y Cloud Run para producción
             allowedOrigins:
               - "http://localhost:3000"
               - "http://localhost:5173"
+              - "https://bancaweb-frontend-845403368692.us-central1.run.app"
+              - "https://cajero-frontend-845403368692.us-central1.run.app"
             allowedMethods:
               - GET
               - POST
