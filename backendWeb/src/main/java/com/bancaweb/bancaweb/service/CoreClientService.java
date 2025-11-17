@@ -24,10 +24,8 @@ public class CoreClientService {
         this.restTemplate = restTemplate;
     }
 
-    // --- Métodos vía HTTP al Core ---
 
     public boolean clienteExiste(String tipoIdentificacion, String identificacion) {
-        // tipoIdentificacion no es usado por el Core; validamos por identificacion
         String url = coreApiBase + "/api/core/consultas/cliente/" + identificacion + "/validar";
         ResponseEntity<CoreDtos.ClienteValidacionResponse> resp = restTemplate.getForEntity(url, CoreDtos.ClienteValidacionResponse.class);
         CoreDtos.ClienteValidacionResponse body = resp.getBody();

@@ -19,7 +19,6 @@ public class OperacionCaja {
     @Column(name = "idoperacion")
     private Integer idOperacion;
 
-    // 🔹 Relación hijo a padre (muchas operaciones → un usuario)
     @ManyToOne
     @JoinColumn(name = "idusuario", nullable = false)
     private UsuarioSistema usuario;
@@ -42,15 +41,12 @@ public class OperacionCaja {
     @Column(name = "estadooperacion", nullable = false, length = 15)
     private String estadoOperacion = "EXITOSA";
 
-    // 🔹 Constructor vacío
     public OperacionCaja() {}
 
-    // 🔹 Constructor solo para la clave primaria
     public OperacionCaja(Integer idOperacion) {
         this.idOperacion = idOperacion;
     }
 
-    // 🔹 equals y hashCode solo por la PK
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -64,7 +60,6 @@ public class OperacionCaja {
         return Objects.hash(idOperacion);
     }
 
-    // 🔹 toString con todas las propiedades
     @Override
     public String toString() {
         return "OperacionCaja{" +

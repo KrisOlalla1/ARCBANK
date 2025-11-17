@@ -23,9 +23,7 @@ public class TransferenciaService {
     @Autowired
     private UsuarioSistemaRepository usuarioSistemaRepository;
 
-    /**
-     * Ejecuta una transferencia en el Core y audita el resultado en la Banca Web.
-     */
+
     public String realizarTransferencia(TransferenciaRequest request) {
 
         if (request.getMonto().compareTo(new java.math.BigDecimal("0.01")) < 0) {
@@ -36,7 +34,6 @@ public class TransferenciaService {
         UsuarioSistema usuario = usuarioSistemaRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario web no encontrado."));
 
-        // 1) Ejecutar la transferencia en el Core vía HTTP
         String resultadoCore = coreClientService.ejecutarTransferencia(
                 request.getCuentaOrigen(),
                 request.getCuentaDestino(),
@@ -45,13 +42,11 @@ public class TransferenciaService {
                 usuario.getIdSucursal()
         );
 
-        // 2) Auditoría local en OperacionCaja (sin idCuenta Core disponible por API; lo dejamos nulo)
         String estadoOperacionWeb = "COMPLETADA".equalsIgnoreCase(resultadoCore) ? "EXITOSA" : "FALLIDA";
 
         OperacionCaja operacion = new OperacionCaja();
         operacion.setUsuario(usuario);
-        // El esquema actual restringe Tipo mediante CHECK; usamos un valor permitido
-        // equivalente a la salida de fondos desde la cuenta de origen.
+
         operacion.setTipo("RETIRO");
         operacion.setIdCuenta(null);
         operacion.setMonto(request.getMonto());

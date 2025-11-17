@@ -33,12 +33,10 @@ public class UsuarioSistemaController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // 🔹 Registrar un nuevo usuario
         @PostMapping("/registro")
         public ResponseEntity<?> registrarUsuario(@RequestBody RegistroUsuarioRequest req) {
 
         try {
-            // Encriptar la contraseña
             String claveHash = passwordEncoder.encode(req.getClave());
 
             UsuarioSistema nuevoUsuario = usuarioSistemaService.registrarUsuario(
@@ -49,7 +47,6 @@ public class UsuarioSistemaController {
                 req.getIdSucursal()
             );
 
-            // Devolver con identificación para que el frontend la guarde
             return ResponseEntity.ok(new UsuarioResponse(nuevoUsuario, req.getIdentificacion()));
 
         } catch (DataIntegrityViolationException ex) {
@@ -59,7 +56,6 @@ public class UsuarioSistemaController {
         }
     }
 
-    // 🔹 Obtener un usuario por ID
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerUsuario(@PathVariable Integer id) {
         Optional<UsuarioSistema> usuario = usuarioSistemaService.buscarPorNombreUsuario(String.valueOf(id));
@@ -67,7 +63,6 @@ public class UsuarioSistemaController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // 🔹 Validar login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req, HttpServletResponse response) {
 
@@ -81,8 +76,6 @@ public class UsuarioSistemaController {
         boolean valido = passwordEncoder.matches(req.getClave(), usuario.getClaveHash());
         if (valido) {
             usuarioSistemaService.registrarUltimoAcceso(usuario);
-            // Establecer una cookie simple con el nombre de usuario e idUsuario para que el endpoint /me pueda identificar la sesión
-            // No cambiamos el body de la respuesta para mantener compatibilidad con clientes existentes.
             try {
                 Cookie userCookie = new Cookie("NAMCA_USER", usuario.getNombreUsuario());
                 userCookie.setPath("/");
@@ -96,7 +89,6 @@ public class UsuarioSistemaController {
                 idCookie.setMaxAge(7 * 24 * 3600);
                 response.addCookie(idCookie);
             } catch (Exception ex) {
-                // si no se puede setear la cookie, no bloqueamos el login
             }
 
             return ResponseEntity.ok("Inicio de sesión exitoso");
@@ -105,10 +97,8 @@ public class UsuarioSistemaController {
         }
     }
 
-    // Nuevo endpoint que devuelve el perfil del usuario autenticado (si se puede identificar)
     @GetMapping("/me")
     public ResponseEntity<?> me(HttpServletRequest request) {
-        // 1) Intentar usar el Principal de la petición (si existe)
         if (request.getUserPrincipal() != null) {
             String principalName = request.getUserPrincipal().getName();
             Optional<UsuarioSistema> usuarioOpt = usuarioSistemaService.buscarPorNombreUsuario(principalName);
@@ -118,7 +108,6 @@ public class UsuarioSistemaController {
             }
         }
 
-        // 2) Fallback: leer cookie NAMCA_USER
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
                 if ("NAMCA_USER".equals(c.getName())) {

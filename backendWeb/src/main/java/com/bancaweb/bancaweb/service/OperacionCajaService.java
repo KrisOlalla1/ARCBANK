@@ -17,20 +17,13 @@ public class OperacionCajaService {
     @Autowired
     private OperacionCajaRepository operacionCajaRepository;
 
-    /**
-     * Consulta movimientos de un usuario entre dos fechas
-     * Validando que el rango no sea mayor a 10 días
-     * y que la fecha de inicio no sea más antigua de 5 meses
-     */
     public List<OperacionCaja> obtenerMovimientosPorFecha(UsuarioSistema usuario, LocalDate desde, LocalDate hasta) {
 
-        // Validar que el rango no sea mayor a 10 días
         long diasEntre = ChronoUnit.DAYS.between(desde, hasta);
         if (diasEntre > 10) {
             throw new IllegalArgumentException("Solo se permiten consultas de hasta 10 días.");
         }
 
-        // Validar que no sea más de 5 meses atrás
         LocalDate haceCincoMeses = LocalDate.now().minusMonths(5);
         if (desde.isBefore(haceCincoMeses)) {
             throw new IllegalArgumentException("Solo puede consultar movimientos de los últimos 5 meses.");

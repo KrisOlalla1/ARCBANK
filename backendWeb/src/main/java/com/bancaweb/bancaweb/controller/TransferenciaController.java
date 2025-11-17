@@ -16,7 +16,6 @@ public class TransferenciaController {
     @Autowired
     private TransferenciaService transferenciaService;
 
-    // Endpoint para ejecutar una transferencia interna
     @PostMapping
     public ResponseEntity<?> realizarTransferencia(@RequestBody TransferenciaRequest request) {
         try {

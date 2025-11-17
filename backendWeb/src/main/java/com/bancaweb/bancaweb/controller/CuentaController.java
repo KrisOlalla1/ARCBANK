@@ -16,8 +16,7 @@ public class CuentaController {
     @Autowired
     private CuentaService cuentaService;
 
-    // Endpoint para la consulta de posición consolidada
-    // Se utiliza la identificación como parámetro de búsqueda (ej. Cédula/RUC)
+
     @GetMapping("/consolidada/{identificacion}")
     public ResponseEntity<?> consultarPosicionConsolidada(@PathVariable String identificacion) {
         try {
@@ -33,7 +32,6 @@ public class CuentaController {
         }
     }
 
-    // Endpoint proxy para movimientos por número de cuenta (a Core vía gateway)
     @GetMapping("/movimientos/{numeroCuenta}")
     public ResponseEntity<?> consultarMovimientos(
             @PathVariable String numeroCuenta,

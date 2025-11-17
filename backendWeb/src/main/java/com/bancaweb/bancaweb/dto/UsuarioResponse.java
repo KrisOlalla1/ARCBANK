@@ -5,10 +5,7 @@ import com.bancaweb.bancaweb.model.UsuarioSistema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO que encapsula UsuarioSistema con identificación del cliente.
- * Usado por /api/usuarios/me y /api/usuarios/registro.
- */
+
 @Data
 @NoArgsConstructor
 public class UsuarioResponse {

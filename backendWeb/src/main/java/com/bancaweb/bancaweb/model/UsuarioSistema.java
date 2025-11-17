@@ -39,15 +39,12 @@ public class UsuarioSistema {
     @Column(name = "estado", nullable = false, length = 15)
     private String estado = "ACTIVO";
 
-    // 🔹 Constructor vacío (sin Lombok)
     public UsuarioSistema() {}
 
-    // 🔹 Constructor solo para la clave primaria
     public UsuarioSistema(Integer idUsuario) {
         this.idUsuario = idUsuario;
     }
 
-    // 🔹 equals y hashCode solo por la PK
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,7 +58,6 @@ public class UsuarioSistema {
         return Objects.hash(idUsuario);
     }
 
-    // 🔹 toString con todas las propiedades
     @Override
     public String toString() {
         return "UsuarioSistema{" +

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 @Data
 public class TransferenciaRequest {
-    private Integer idUsuarioWeb; // Usuario logueado que inicia la transferencia
+    private Integer idUsuarioWeb; 
     private String cuentaOrigen;
     private String cuentaDestino;
     private BigDecimal monto;
