@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Movimientos from "./pages/Movimientos";
 import Transferir from "./pages/Transferir";
+import TransaccionesInterbancarias from "./pages/TransaccionesInterbancarias";
 import Perfil from "./pages/Perfil";
 
 export default function App() {
@@ -15,11 +16,12 @@ export default function App() {
   const { loggedIn } = useAuth();
 
   const isLoginPage = location.pathname === "/login";
+  const isDevView = location.pathname === "/home-dev" || location.pathname === "/interbancarias-dev";
 
   return (
     <div className="app-shell">
       {}
-      {loggedIn && !isLoginPage && <Sidebar />}
+      {(loggedIn || isDevView) && !isLoginPage && <Sidebar />}
 
       <main className="main" style={{ width: "100%" }}>
         <Routes>
@@ -52,11 +54,50 @@ export default function App() {
             }
           />
 
+          {/* Ruta temporal: Transferir sin login para desarrollo */}
+          <Route
+            path="/transferir-dev"
+            element={
+              <ProtectedRoute allowAnonymous={true}>
+                <Transferir />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/interbancarias"
+            element={
+              <ProtectedRoute>
+                <TransaccionesInterbancarias />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Ruta temporal: permitir acceso sin login para desarrollo */}
+          <Route
+            path="/interbancarias-dev"
+            element={
+              <ProtectedRoute allowAnonymous={true}>
+                <TransaccionesInterbancarias />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/perfil"
             element={
               <ProtectedRoute>
                 <Perfil />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Ruta temporal para desarrollo: Home sin login */}
+          <Route
+            path="/home-dev"
+            element={
+              <ProtectedRoute allowAnonymous={true}>
+                <Home />
               </ProtectedRoute>
             }
           />

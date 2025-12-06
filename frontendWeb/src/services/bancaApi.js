@@ -18,10 +18,20 @@ export async function realizarTransferencia(request) {
   return await apiFetch('/api/transferencias', { method: 'POST', body: JSON.stringify(request) })
 }
 
+export async function realizarTransferenciaInterbancaria(request) {
+  return await apiFetch('/api/transferencias/interbancaria', { method: 'POST', body: JSON.stringify(request) })
+}
+
+export async function getBancos() {
+  return await apiFetch('/api/bancos')
+}
+
 const bancaApi = {
   getConsolidada,
   getMovimientos,
   realizarTransferencia
+  , realizarTransferenciaInterbancaria,
+  getBancos
 }
 
 export default bancaApi

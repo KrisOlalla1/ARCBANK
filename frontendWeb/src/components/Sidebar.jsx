@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { FiHome, FiList, FiLogOut } from "react-icons/fi"
 import { TbArrowsExchange } from "react-icons/tb"   
@@ -7,6 +7,10 @@ import { TbArrowsExchange } from "react-icons/tb"
 export default function Sidebar(){
   const { state, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isDevView = location.pathname && location.pathname.indexOf('-dev') !== -1
+  const interbancariasPath = isDevView ? '/interbancarias-dev' : '/interbancarias'
+  const transferirPath = isDevView ? '/transferir-dev' : '/transferir'
 
   const handleLogout = () => {
     logout()
@@ -17,12 +21,12 @@ export default function Sidebar(){
     <aside className="sidebar" style={styles.sidebar}>
       <div className="brand" style={styles.brand}>ARCBANK</div>
 
-      <div className="profile-mini" style={styles.profileMini}>
+          <div className="profile-mini" style={styles.profileMini}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={styles.circleIcon}>👤</div>
 
           <div style={{ display: "flex", flexDirection: "column", lineHeight: "18px" }}>
-            <span style={{ fontWeight: 700 }}>{state.user.name}</span>
+            <span style={{ fontWeight: 700 }}>{state?.user?.name || 'Invitado'}</span>
             <NavLink to="/perfil" className="small" style={styles.profileLink}>
               Mi perfil
             </NavLink>
@@ -48,9 +52,16 @@ export default function Sidebar(){
           </li>
 
           <li>
-            <NavLink to="/transferir" className={({isActive}) => isActive ? 'active' : ''} style={styles.navItem}>
+            <NavLink to={transferirPath} className={({isActive}) => isActive ? 'active' : ''} style={styles.navItem}>
               <TbArrowsExchange size={20} />   {/* ICONO NUEVO */}
               Transferir
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to={interbancariasPath} className={({isActive}) => isActive ? 'active' : ''} style={styles.navItem}>
+              <TbArrowsExchange size={20} />
+              Transferencias Interbancarias
             </NavLink>
           </li>
 
