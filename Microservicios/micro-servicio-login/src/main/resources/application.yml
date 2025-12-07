@@ -1,0 +1,17 @@
+﻿spring:
+  application:
+    name: backend-login-micro
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_login
+    username: user_db_login
+    password: password_db_login
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none # Usa 'none' en producción; 'update' solo para desarrollo rápido.
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 8081 # El microservicio de login debe usar un puerto diferente al core (ej: 8080)

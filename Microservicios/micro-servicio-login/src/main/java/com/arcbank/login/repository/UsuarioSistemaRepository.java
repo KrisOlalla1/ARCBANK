@@ -1,0 +1,9 @@
+﻿package com.arcbank.login.repository;
+
+import com.arcbank.login.model.UsuarioSistema;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+public interface UsuarioSistemaRepository extends JpaRepository<UsuarioSistema, Integer> {
+    Optional<UsuarioSistema> findByNombreUsuario(String nombreUsuario);
+}
