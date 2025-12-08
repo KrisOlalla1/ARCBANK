@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth, apiFetch } from "../context/AuthContext";
 import { FaUser, FaLock, FaEyeSlash } from "react-icons/fa";
+import "./Login.css";
 
 export default function Login() {
   const { login, persistIdentification } = useAuth();
@@ -52,40 +53,42 @@ export default function Login() {
 
 
   return (
-    <div style={styles.page}>
-      <div style={styles.left}>
-        <h1 style={styles.logo}>ARCBANK</h1>
+    <div className="login-page" style={styles.page}>
+      <div className="left" style={styles.left}>
+        <h1 className="login-logo" style={styles.logo}>ARCBANK</h1>
 
-        <div style={styles.loginBox}>
+        <div className="login-box" style={styles.loginBox}>
           <h2 style={styles.title}>Bienvenidos</h2>
           <h3 style={styles.subtitle}>Ingresa a tu Banca</h3>
 
           {err && <div style={styles.error}>{err}</div>}
 
           <form onSubmit={submit}>
-            <div style={styles.inputGroup}>
-              <FaUser style={styles.icon} />
-              <input
-                style={styles.input}
-                placeholder="Usuario"
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-              />
-            </div>
-            <div style={styles.forgot}>¿Olvidaste tu usuario?</div>
+              <div className="step-group">
+                <div style={styles.inputGroup}>
+                  <FaUser style={styles.icon} />
+                  <input
+                    style={styles.input}
+                    placeholder="Usuario"
+                    value={user}
+                    onChange={(e) => setUser(e.target.value)}
+                  />
+                </div>
+                <div style={styles.forgot}>¿Olvidaste tu usuario?</div>
 
-            <div style={styles.inputGroup}>
-              <FaLock style={styles.icon} />
-              <input
-                type="password"
-                style={styles.input}
-                placeholder="Contraseña"
-                value={pass}
-                onChange={(e) => setPass(e.target.value)}
-              />
-              <FaEyeSlash style={styles.eyeIcon} />
-            </div>
-            <div style={styles.forgot}>¿Olvidaste tu contraseña?</div>
+                <div style={styles.inputGroup}>
+                  <FaLock style={styles.icon} />
+                  <input
+                    type="password"
+                    style={styles.input}
+                    placeholder="Contraseña"
+                    value={pass}
+                    onChange={(e) => setPass(e.target.value)}
+                  />
+                  <FaEyeSlash style={styles.eyeIcon} />
+                </div>
+                <div style={styles.forgot}>¿Olvidaste tu contraseña?</div>
+              </div>
 
             <button type="submit" style={styles.button}>
               Ingresar
@@ -129,18 +132,22 @@ export default function Login() {
         </div>
       </div>
 
-      <div style={styles.right}>
-        <h2 style={styles.recoTitle}>Recomendaciones</h2>
-        <ol style={styles.recoList}>
-          <li>Cuida bien tu usuario y contraseña</li>
-          <li>Verifica todo antes de ingresar</li>
-        </ol>
+      <div className="right" style={styles.right}>
+        <div className="right-card">
+          <h2 className="reco-title">Recomendaciones</h2>
+          <ol className="reco-list">
+            <li>Cuida bien tu usuario y contraseña</li>
+            <li>Verifica todo antes de ingresar</li>
+          </ol>
 
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/706/706830.png"
-          alt="persona"
-          style={{ width: 250, marginTop: 20 }}
-        />
+          <div className="reco-avatar">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/706/706830.png"
+              alt="persona"
+              className="reco-icon"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -154,26 +161,31 @@ const styles = {
   },
   left: {
     flex: 1,
-    padding: "40px 60px",
+    padding: "20px 20px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
   right: {
     flex: 1,
-    padding: "60px 80px",
+    padding: "24px 24px",
     display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
+    alignItems: "center",
+    justifyContent: "center",
   },
   logo: {
     fontSize: 40,
     fontWeight: "bold",
     color: "#b8860b",
-    marginBottom: 50,
+    marginBottom: 0,
   },
   loginBox: {
     background: "white",
-    padding: 40,
+    padding: 32,
     borderRadius: 20,
-    width: 420,
+    width: 460,
+    minHeight: 520,
     boxShadow: "0 6px 15px rgba(0,0,0,0.1)",
   },
   title: {

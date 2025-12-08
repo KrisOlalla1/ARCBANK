@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
+import { FiMenu, FiX } from "react-icons/fi";
 
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -14,16 +15,60 @@ import Perfil from "./pages/Perfil";
 export default function App() {
   const location = useLocation();
   const { loggedIn } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Abrir sidebar por defecto solo en pantallas anchas
+  useEffect(() => {
+    const wide = window.innerWidth > 900;
+    setSidebarOpen(wide);
+
+    const onResize = () => {
+      setSidebarOpen(window.innerWidth > 900);
+    };
+
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const isLoginPage = location.pathname === "/login";
-  const isDevView = location.pathname === "/home-dev" || location.pathname === "/interbancarias-dev";
+  // Permitir cualquier ruta que contenga '-dev' para vista rápida sin login
+  const isDevView = location.pathname.includes("-dev");
 
   return (
     <div className="app-shell">
-      {}
-      {(loggedIn || isDevView) && !isLoginPage && <Sidebar />}
+      {(loggedIn || isDevView) && !isLoginPage && (
+        <Sidebar
+          isOpen={sidebarOpen}
+          onRequestClose={() => setSidebarOpen(false)}
+        />
+      )}
 
       <main className="main" style={{ width: "100%" }}>
+        {/* Botón hamburguesa visible en pantallas pequeñas */}
+        {(loggedIn || isDevView) && !isLoginPage && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              paddingBottom: 8,
+            }}
+          >
+            <button
+              onClick={() => setSidebarOpen((s) => !s)}
+              aria-label="Toggle sidebar"
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                fontSize: 22,
+                padding: 8,
+              }}
+            >
+              {sidebarOpen ? <FiX /> : <FiMenu />}
+            </button>
+          </div>
+        )}
+
         <Routes>
           <Route path="/login" element={<Login />} />
 
@@ -64,6 +109,16 @@ export default function App() {
             }
           />
 
+          {/* Ruta temporal: Movimientos sin login para desarrollo */}
+          <Route
+            path="/movimientos-dev"
+            element={
+              <ProtectedRoute allowAnonymous={true}>
+                <Movimientos />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/interbancarias"
             element={
@@ -73,7 +128,7 @@ export default function App() {
             }
           />
 
-          {/* Ruta temporal: permitir acceso sin login para desarrollo */}
+          {/* Ruta temporal: Interbancarias sin login para desarrollo */}
           <Route
             path="/interbancarias-dev"
             element={

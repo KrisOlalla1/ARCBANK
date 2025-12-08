@@ -6,6 +6,7 @@ import "../ValoresTransaccion/ValoresTransaccion.css";
 
 export default function ValoresDeposito() {
   const nav = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
 
   const stored = localStorage.getItem("cajero");
@@ -170,12 +171,20 @@ export default function ValoresDeposito() {
 
         <div className="rh-right">
           <button className="rh-link" onClick={irInicio}>
-            <i className="fa-solid fa-house-chimney"></i> Inicio
+            <i className="fa-solid fa-house-chimney"></i> <span className="link-text">Inicio</span>
           </button>
           <button className="rh-link" onClick={cerrarSesion}>
-            <i className="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+            <i className="fa-solid fa-right-from-bracket"></i> <span className="link-text">Cerrar sesión</span>
           </button>
+          <button className="rh-hamburger" onClick={() => setMenuOpen(s => !s)} aria-label="Toggle menu">☰</button>
         </div>
+
+        {menuOpen && (
+          <div className="mobile-menu">
+            <button className="rh-link" onClick={irInicio}><i className="fa-solid fa-house-chimney"></i> <span className="link-text">Inicio</span></button>
+            <button className="rh-link" onClick={cerrarSesion}><i className="fa-solid fa-right-from-bracket"></i> <span className="link-text">Cerrar sesión</span></button>
+          </div>
+        )}
       </header>
 
       <main className="retiro-main">

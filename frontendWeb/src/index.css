@@ -5,6 +5,8 @@
   --muted: #6b7280;
 }
 
+@import './styles/responsive.css';
+
 * { box-sizing: border-box; }
 body { margin: 0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--bg); color: #111827; }
 
@@ -28,3 +30,34 @@ input, select, textarea, button { font: inherit; }
 .btn.ghost { background: transparent; color: var(--accent); border: 1px solid #e6e6e6; }
 
 .small { font-size: 13px; color: var(--muted); }
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .app-shell { flex-direction: column; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e6e6e6; padding: 12px; }
+  .nav-list { flex-direction: row; gap: 6px; overflow-x: auto; }
+  .nav-list a { padding: 8px 10px; white-space: nowrap; }
+  .main { padding: 12px; }
+  .card { padding: 12px; }
+}
+
+@media (max-width: 480px) {
+  .sidebar { padding: 8px; }
+  .brand { font-size: 16px; }
+  .header-inline { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+/* Make form elements full width on small screens */
+input, select, textarea { max-width: 100%; }
+@media (max-width: 640px) {
+  .table { width: 100% !important; font-size: 13px; }
+}
+
+/* Movimientos page controls responsiveness */
+.mov-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.mov-controls .input { max-width: 100%; }
+@media (max-width: 640px) {
+  .mov-controls select { width: 100% !important; }
+  .mov-controls input[type="date"] { width: 100%; }
+  .mov-controls .small { width: 100%; }
+}

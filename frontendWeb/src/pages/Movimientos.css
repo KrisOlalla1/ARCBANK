@@ -1,0 +1,64 @@
+.mov-page {
+  padding: 36px 20px;
+}
+.mov-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.mov-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  text-align: center;
+  color: #243b55;
+}
+.mov-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.mov-controls .small { color: #556; font-size: 13px; }
+.input, select.input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #dde3ea;
+  font-size: 14px;
+}
+.btn-primary {
+  background: linear-gradient(90deg,#ffb300,#f08c00);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(36,59,85,0.06);
+  padding: 14px;
+}
+.mov-list { list-style: none; padding: 0; margin: 0; }
+.mov-item {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.mov-item:last-child { border-bottom: none; }
+.mov-desc { font-weight: 600; color: #223; }
+.mov-meta { color: #6b7280; font-size: 13px; margin-top: 6px; }
+.mov-amount { font-weight: 800; text-align: right; font-size: 16px; }
+.amount-credit { color: #117a37; }
+.amount-debit { color: #b91c1c; }
+
+@media (max-width: 720px) {
+  .mov-item { grid-template-columns: 1fr 110px; }
+  .mov-controls { justify-content: center; }
+}

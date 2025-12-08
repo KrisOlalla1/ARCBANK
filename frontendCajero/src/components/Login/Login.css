@@ -17,6 +17,21 @@
   gap: 15px;           
 }
 
+@media (max-width: 900px) {
+  .login-container { flex-direction: column; max-width: 100%; padding: 12px; }
+  .left-section, .right-section { width: 100%; }
+  .login-box { width: 100%; padding: 20px; }
+  .side-img { width: 220px; margin: 10px auto 0; }
+  .logo { width: 200px; }
+  .security-text { font-size: 16px; }
+}
+
+@media (max-width: 480px) {
+  .login-box { padding: 16px; }
+  .login-box h1 { font-size: 28px; }
+  .subtitle { font-size: 14px; }
+}
+
 
 
 .left-section {

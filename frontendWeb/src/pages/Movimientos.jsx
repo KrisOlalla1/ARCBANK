@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getMovimientos } from '../services/bancaApi'
+import './Movimientos.css'
 
 export default function Movimientos(){
   const { state } = useAuth()
@@ -41,35 +42,44 @@ export default function Movimientos(){
   }, [])
 
   return (
-    <div>
-      <h2>Movimientos</h2>
-      <div style={{display:'flex', gap:8, alignItems:'center', marginTop:8, marginBottom:12}}>
-        <label className="small">Cuenta</label>
-        <select value={selectedAcc} onChange={e=>setSelectedAcc(e.target.value)} className="input" style={{width:200}}>
-          {state.user.accounts.map(a => <option key={a.id} value={a.number}>{a.number} — ${a.balance.toFixed(2)}</option>)}
-        </select>
-        <button className="small" onClick={loadMovements} style={{padding:'6px 10px'}}>Cargar movimientos</button>
-        <label className="small" style={{marginLeft: 16}}>Desde</label>
-        <input type="date" className="input" value={fechaInicio} onChange={e=>setFechaInicio(e.target.value)} />
-        <label className="small">Hasta</label>
-        <input type="date" className="input" value={fechaFin} onChange={e=>setFechaFin(e.target.value)} />
-        <label className="small" style={{marginLeft: 16}}>Filtrar por fecha exacta</label>
-        <input type="date" className="input" value={filterDate} onChange={e=>setFilterDate(e.target.value)} />
-      </div>
+    <div className="mov-page">
+      <div className="mov-container">
+        <h2 className="mov-title">Movimientos</h2>
 
-      <div className="card">
-        {filtered.length===0 && <div className="small">No hay movimientos</div>}
-        <ul style={{listStyle:'none', padding:0}}>
-          {filtered.map(tx => (
-            <li key={tx.id} style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid #f3f4f6'}}>
-              <div>
-                <div style={{fontWeight:600}}>{tx.desc}</div>
-                <div className="small">{tx.date} — {tx.name}</div>
-              </div>
-              <div style={{fontWeight:700}}>{tx.amount >= 0 ? `+$${tx.amount.toFixed(2)}` : `-$${Math.abs(tx.amount).toFixed(2)}`}</div>
-            </li>
-          ))}
-        </ul>
+        <div className="mov-controls">
+          <label className="small">Cuenta</label>
+          <select value={selectedAcc} onChange={e=>setSelectedAcc(e.target.value)} className="input" style={{minWidth:220}}>
+            {state.user.accounts.map(a => <option key={a.id} value={a.number}>{a.number} — ${a.balance.toFixed(2)}</option>)}
+          </select>
+
+          <label className="small">Desde</label>
+          <input type="date" className="input" value={fechaInicio} onChange={e=>setFechaInicio(e.target.value)} />
+
+          <label className="small">Hasta</label>
+          <input type="date" className="input" value={fechaFin} onChange={e=>setFechaFin(e.target.value)} />
+
+          <label className="small">Filtrar por fecha</label>
+          <input type="date" className="input" value={filterDate} onChange={e=>setFilterDate(e.target.value)} />
+
+          <button className="btn-primary" onClick={loadMovements}>Cargar movimientos</button>
+        </div>
+
+        <div className="card" style={{marginTop: 6}}>
+          {filtered.length===0 && <div className="small" style={{padding:16}}>No hay movimientos</div>}
+          <ul className="mov-list">
+            {filtered.map(tx => (
+              <li key={tx.id} className="mov-item">
+                <div>
+                  <div className="mov-desc">{tx.desc}</div>
+                  <div className="mov-meta">{tx.date} — {tx.name}</div>
+                </div>
+                <div className={`mov-amount ${tx.amount >= 0 ? 'amount-credit' : 'amount-debit'}`}>
+                  {tx.amount >= 0 ? `+$${tx.amount.toFixed(2)}` : `-$${Math.abs(tx.amount).toFixed(2)}`}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   )
