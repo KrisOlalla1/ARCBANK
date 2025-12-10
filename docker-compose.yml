@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+
+  # 1. Base de datos Postgres
+  db-cuentas:
+    image: postgres:17
+    container_name: db-cuentas-arcbank
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: db_cuentas
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - ./postgres_data_cuentas:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - arcbank-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Microservicio cuentas
+  micro-cuentas:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: micro-cuentas
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-cuentas:5432/db_cuentas
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123
+
+      # Opcional pero recomendado:
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "false"
+
+    depends_on:
+      db-cuentas:
+        condition: service_healthy
+    networks:
+      - arcbank-net
+
+networks:
+  arcbank-net:
+    driver: bridge
+
