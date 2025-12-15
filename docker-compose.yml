@@ -49,4 +49,3 @@ services:
 networks:
   arcbank-net:
     driver: bridge
-

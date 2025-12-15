@@ -1,37 +1,46 @@
 package com.arcbank.cuentas.controller;
 
-import com.arcbank.cuentas.dto.TasaInteresHistorialDTO;
+import com.arcbank.cuentas.dto.request.TasaInteresHistorialRequest;
+import com.arcbank.cuentas.dto.response.TasaInteresHistorialDTO;
 import com.arcbank.cuentas.service.TasaInteresService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cuentas/tasas")
+@RequestMapping("/api/cuentas/v1/tasas")
+@RequiredArgsConstructor
+@Slf4j
+@Tag(name = "Tasas de Interés", description = "Gestión de tasas de interés")
 public class TasaInteresController {
 
     private final TasaInteresService service;
 
-    public TasaInteresController(TasaInteresService service) {
-        this.service = service;
-    }
-
+    @Operation(summary = "Crear tasa de interés")
     @PostMapping
-    public ResponseEntity<TasaInteresHistorialDTO> create(@RequestBody TasaInteresHistorialDTO dto) {
-        return ResponseEntity.ok(service.create(dto));
+    public ResponseEntity<TasaInteresHistorialDTO> create(@Valid @RequestBody TasaInteresHistorialRequest request) {
+        return ResponseEntity.ok(service.create(request));
     }
 
+    @Operation(summary = "Obtener tasa de interés por ID")
     @GetMapping("/{id}")
     public ResponseEntity<TasaInteresHistorialDTO> get(@PathVariable Integer id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @Operation(summary = "Listar tasas de interés")
     @GetMapping
     public ResponseEntity<List<TasaInteresHistorialDTO>> all() {
         return ResponseEntity.ok(service.findAll());
     }
 
+    @Operation(summary = "Eliminar tasa de interés")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         service.delete(id);
