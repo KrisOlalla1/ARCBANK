@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+
+  # 1. Base de datos Postgres
+  db-clientes:
+    image: postgres:17
+    container_name: db-clientes-arcbank
+    ports:
+      # Petición: Puerto externo 5433 para no chocar con "cuentas"
+      - "5433:5432"
+    environment:
+
+      POSTGRES_DB: microcliente
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Admin123
+    volumes:
+      - ./postgres_data_clientes:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - arcbank-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Microservicio Clientes
+  micro-clientes:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: micro-clientes-arcbank
+    ports:
+
+      - "8080:8080"
+    environment:
+
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-clientes:5432/microcliente
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Admin123
+
+
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+
+    depends_on:
+      db-clientes:
+        condition: service_healthy
+    networks:
+      - arcbank-net
+
+networks:
+  arcbank-net:
+    driver: bridge
