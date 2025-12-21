@@ -40,6 +40,7 @@ app:
   # Configuración del Switch Interbancario DIGICONECU
   switch:
     url: ${APP_SWITCH_URL:http://localhost:8081}
+    network-url: ${APP_SWITCH_URL:http://network-management:8082}
   
   # Código del banco (para identificarse ante el switch)
   banco:
