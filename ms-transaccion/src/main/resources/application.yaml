@@ -36,6 +36,14 @@ app:
     # Aquí defines la URL donde vive el microservicio de Cuentas.
     # Si 'ms-cuentas' corre en otro puerto o IP, cámbialo aquí.
     cuentas-url: ${CUENTAS_URL:http://localhost:8081}
+  
+  # Configuración del Switch Interbancario DIGICONECU
+  switch:
+    url: ${APP_SWITCH_URL:http://localhost:8081}
+  
+  # Código del banco (para identificarse ante el switch)
+  banco:
+    codigo: ${BANCO_CODIGO:ARCBANK}
 
 # --- CONFIGURACIÓN SWAGGER / OPENAPI ---
 springdoc:

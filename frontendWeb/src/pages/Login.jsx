@@ -83,7 +83,7 @@ export default function Login() {
   return (
     <div className="login-page" style={styles.page}>
       <div className="left" style={styles.left}>
-        <h1 className="login-logo" style={styles.logo}>BANTEC</h1>
+        <h1 className="login-logo" style={styles.logo}>ARCBANK</h1>
 
         <div className="login-box" style={styles.loginBox}>
           <h2 style={styles.title}>Bienvenidos</h2>

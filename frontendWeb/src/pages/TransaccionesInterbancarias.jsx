@@ -10,8 +10,8 @@ export default function TransaccionesInterbancarias() {
     // Cuentas del usuario (Manejo defensivo si aún no cargan)
     const accounts = (state && Array.isArray(state.user?.accounts) && state.user.accounts.length)
         ? state.user.accounts
-        : []; 
-        
+        : [];
+
     // Si no hay cuentas, no se puede operar (o mostrar mock temporal)
     const firstAccId = accounts[0]?.id || '';
 
@@ -20,10 +20,10 @@ export default function TransaccionesInterbancarias() {
     const [bankName, setBankName] = useState("");
     const [banks, setBanks] = useState([])
     const [toName, setToName] = useState("");
-    
+
     // Estado de cuenta origen seleccionada (ID interno)
     const [fromAccId, setFromAccId] = useState(firstAccId);
-    
+
     // Objeto cuenta origen completo para mostrar saldo/numero
     const fromAccount = accounts.find(a => a.id === fromAccId) || accounts[0] || { number: '---', balance: 0 };
 
@@ -31,20 +31,20 @@ export default function TransaccionesInterbancarias() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    useEffect(()=>{
+    useEffect(() => {
         let cancelled = false
         getBancos().then(res => {
             // Adaptar respuesta según venga del backend o mock
             const list = (res && res.bancos) ? res.bancos : (Array.isArray(res) ? res : [])
             if (!cancelled) setBanks(list)
-        }).catch(()=>{ })
-        
+        }).catch(() => { })
+
         // Si cambia la lista de cuentas y no hay seleccionada, seleccionar la primera
-        if(accounts.length > 0 && !fromAccId) {
+        if (accounts.length > 0 && !fromAccId) {
             setFromAccId(accounts[0].id)
         }
-        
-        return ()=>{ cancelled = true }
+
+        return () => { cancelled = true }
     }, [accounts])
 
     const goToStep2 = () => {
@@ -61,11 +61,11 @@ export default function TransaccionesInterbancarias() {
     const goToStep3 = () => {
         const num = Number(amount);
         if (!num || num <= 0) return setError("Monto inválido.");
-        
+
         // Validación de saldo (Opcional, el backend valida también)
         if (num > (fromAccount.balance || 0))
             return setError("Saldo insuficiente en la cuenta.");
-            
+
         setError("");
         setStep(3);
     };
@@ -82,10 +82,9 @@ export default function TransaccionesInterbancarias() {
 
         try {
             const request = {
-                tipoOperacion: "TRANSFERENCIA_SALIDA", // O INTERBANCARIA según tu Enum Java
+                tipoOperacion: "TRANSFERENCIA_SALIDA",
                 idCuentaOrigen: fromAccId, // Integer ID interno
-                // idCuentaDestino: null, // En interbancaria no hay ID destino interno
-                cuentaDestinoExterna: toAccount, // Necesitas este campo en tu DTO Java si soportas esto
+                cuentaExterna: toAccount, // Cuenta destino en otro banco
                 bancoDestino: bankName,
                 beneficiario: toName,
                 monto: Number(amount),
@@ -96,12 +95,12 @@ export default function TransaccionesInterbancarias() {
             // Nota: Si tu backend ms-transaccion actual NO soporta transferencias externas (campos bancoDestino/cuentaExterna),
             // esto fallará o requerirá que actualices el DTO Java.
             // Asumiremos que el método realizarTransferenciaInterbancaria maneja la lógica.
-            
+
             await realizarTransferenciaInterbancaria(request);
-            
+
             // Éxito
             setStep(4);
-            
+
             // Opcional: Actualizar saldo localmente o recargar
             setTimeout(() => {
                 navigate('/movimientos');
@@ -150,7 +149,7 @@ export default function TransaccionesInterbancarias() {
 
                     <label>Banco</label>
                     {banks && banks.length > 0 ? (
-                        <select style={styles.input} value={bankName} onChange={e=>setBankName(e.target.value)}>
+                        <select style={styles.input} value={bankName} onChange={e => setBankName(e.target.value)}>
                             <option value="">-- Seleccione un banco --</option>
                             {banks.map((b, i) => (
                                 <option key={b.id || i} value={b.nombre || b.name || b.id}>{b.nombre || b.name || b.id}</option>
@@ -250,7 +249,7 @@ export default function TransaccionesInterbancarias() {
                             </tr>
                             <tr><td colSpan={2} style={styles.sectionTitle}>Origen</td></tr>
                             <tr><td>Cuenta:</td><td>{fromAccount.number}</td></tr>
-                            
+
                             <tr><td colSpan={2} style={styles.sectionTitle}>Destino</td></tr>
                             <tr><td>Banco:</td><td>{bankName}</td></tr>
                             <tr><td>Beneficiario:</td><td>{toName}</td></tr>
@@ -274,7 +273,7 @@ export default function TransaccionesInterbancarias() {
             {step === 4 && (
                 <div style={styles.card}>
                     <h2 style={styles.title}>Transacción Exitosa</h2>
-                    <p style={{textAlign:'center'}}>La transferencia ha sido enviada a procesamiento.</p>
+                    <p style={{ textAlign: 'center' }}>La transferencia ha sido enviada a procesamiento.</p>
                     <div style={styles.buttonRow}>
                         <button style={styles.btn} onClick={() => navigate('/movimientos')}>Ir a Movimientos</button>
                         <button style={styles.btn} onClick={downloadReceipt}>📄 Descargar</button>

@@ -1,7 +1,9 @@
 :root{
-  --bg: #f3f4f6;
+  --bg: #fffef5;
   --sidebar-bg: #ffffff;
-  --accent: #0b5ed7;
+  --accent: #cc9900;
+  --accent-dark: #a67c00;
+  --accent-light: #ffcc00;
   --muted: #6b7280;
 }
 

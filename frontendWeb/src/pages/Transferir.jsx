@@ -39,7 +39,7 @@ export default function Transfer() {
 
         if (!toAccountNum || !toName) return setError("Todos los campos son obligatorios.");
 
-        // Transferencias internas - siempre mismo banco (BANTEC)
+        // Transferencias internas - siempre mismo banco (ARCBANK)
 
         // --- VALIDACIÓN DE CUENTA DESTINO ---
         setLoading(true);
@@ -48,7 +48,7 @@ export default function Transfer() {
             const cuentaDestino = await getCuentaPorNumero(toAccountNum);
 
             if (!cuentaDestino || !cuentaDestino.idCuenta) {
-                throw new Error("La cuenta destino no existe en BANTEC.");
+                throw new Error("La cuenta destino no existe en ARCBANK.");
             }
 
             // Validar que no se transfiera a sí mismo
@@ -131,7 +131,7 @@ export default function Transfer() {
             {step === 1 && (
                 <div style={styles.card}>
                     <h2 style={styles.title}>Transferir (Interna)</h2>
-                    <div style={styles.infoBar}>Transferencia entre cuentas BANTEC</div>
+                    <div style={styles.infoBar}>Transferencia entre cuentas ARCBANK</div>
 
                     <label>N° de cuenta destino</label>
                     <input

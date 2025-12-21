@@ -154,7 +154,7 @@ export default function ValoresDeposito() {
             nombre: `${cliente.nombres} ${cliente.apellidos}`.trim(),
             cedula: cliente.cedula,
             numero: numeroCuentaCliente,
-            banco: "BANTEC",
+            banco: "ARCBANK",
           },
         },
       });

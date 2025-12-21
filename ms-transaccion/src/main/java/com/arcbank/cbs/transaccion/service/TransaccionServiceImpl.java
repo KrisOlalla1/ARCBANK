@@ -2,14 +2,19 @@ package com.arcbank.cbs.transaccion.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors; // <--- IMPORTANTE
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.arcbank.cbs.transaccion.client.CuentaCliente;
+import com.arcbank.cbs.transaccion.client.SwitchClient;
 import com.arcbank.cbs.transaccion.dto.SaldoDTO;
+import com.arcbank.cbs.transaccion.dto.SwitchTransferRequest;
+import com.arcbank.cbs.transaccion.dto.SwitchTransferResponse;
 import com.arcbank.cbs.transaccion.dto.TransaccionRequestDTO;
 import com.arcbank.cbs.transaccion.dto.TransaccionResponseDTO;
 import com.arcbank.cbs.transaccion.exception.BusinessException;
@@ -26,6 +31,10 @@ public class TransaccionServiceImpl implements TransaccionService {
 
     private final TransaccionRepository transaccionRepository;
     private final CuentaCliente cuentaCliente;
+    private final SwitchClient switchClient;
+
+    @Value("${app.banco.codigo:BANTEC}")
+    private String codigoBanco;
 
     @Override
     @Transactional
@@ -97,11 +106,58 @@ public class TransaccionServiceImpl implements TransaccionService {
                 case "TRANSFERENCIA_SALIDA" -> {
                     if (request.getIdCuentaOrigen() == null)
                         throw new BusinessException("Falta cuenta origen para transferencia externa.");
+                    if (request.getCuentaExterna() == null || request.getCuentaExterna().isBlank())
+                        throw new BusinessException("Falta cuenta destino externa para transferencia interbancaria.");
 
                     trx.setIdCuentaOrigen(request.getIdCuentaOrigen());
                     trx.setIdCuentaDestino(null);
+                    trx.setCuentaExterna(request.getCuentaExterna());
 
-                    yield procesarSaldo(trx.getIdCuentaOrigen(), request.getMonto().negate());
+                    // 1. Debitar saldo local primero
+                    BigDecimal saldoOrigen = procesarSaldo(trx.getIdCuentaOrigen(), request.getMonto().negate());
+
+                    // 2. Obtener número de cuenta origen para el switch
+                    String numeroCuentaOrigen = obtenerNumeroCuenta(request.getIdCuentaOrigen());
+
+                    // 3. Enviar al switch DIGICONECU
+                    try {
+                        log.info("Enviando transferencia al switch: {} -> {}", numeroCuentaOrigen,
+                                request.getCuentaExterna());
+
+                        SwitchTransferResponse switchResp = switchClient.enviarTransferencia(
+                                SwitchTransferRequest.builder()
+                                        .instructionId(UUID.fromString(trx.getReferencia()))
+                                        .bancoOrigen(codigoBanco)
+                                        .cuentaOrigen(numeroCuentaOrigen)
+                                        .cuentaDestino(request.getCuentaExterna())
+                                        .monto(request.getMonto())
+                                        .moneda("USD")
+                                        .concepto(request.getDescripcion())
+                                        .build());
+
+                        if (!switchResp.isSuccess()) {
+                            // Revertir débito local
+                            log.warn("Switch rechazó transferencia, revirtiendo débito local");
+                            procesarSaldo(trx.getIdCuentaOrigen(), request.getMonto());
+                            String errorMsg = switchResp.getError() != null
+                                    ? switchResp.getError().getMessage()
+                                    : "Error desconocido del switch";
+                            throw new BusinessException("Switch rechazó: " + errorMsg);
+                        }
+
+                        log.info("Transferencia enviada al switch exitosamente. Banco destino: {}",
+                                switchResp.getData() != null ? switchResp.getData().getBancoDestino() : "N/A");
+
+                    } catch (BusinessException be) {
+                        throw be;
+                    } catch (Exception e) {
+                        // Revertir débito local si falla comunicación
+                        log.error("Error comunicando con switch, revirtiendo débito: {}", e.getMessage());
+                        procesarSaldo(trx.getIdCuentaOrigen(), request.getMonto());
+                        throw new BusinessException("Error comunicando con switch interbancario: " + e.getMessage());
+                    }
+
+                    yield saldoOrigen;
                 }
 
                 case "TRANSFERENCIA_ENTRADA" -> {
@@ -223,5 +279,82 @@ public class TransaccionServiceImpl implements TransaccionService {
                 .canal(t.getCanal())
                 .estado(t.getEstado())
                 .build();
+    }
+
+    // --- MÉTODOS AUXILIARES PARA TRANSFERENCIAS INTERBANCARIAS ---
+
+    /**
+     * Obtiene el número de cuenta a partir del ID interno
+     */
+    private String obtenerNumeroCuenta(Integer idCuenta) {
+        try {
+            Map<String, Object> cuenta = cuentaCliente.obtenerCuenta(idCuenta);
+            if (cuenta != null && cuenta.get("numeroCuenta") != null) {
+                return cuenta.get("numeroCuenta").toString();
+            }
+        } catch (Exception e) {
+            log.warn("No se pudo obtener número de cuenta para ID {}: {}", idCuenta, e.getMessage());
+        }
+        // Fallback: usar el ID como string (no ideal pero evita fallos)
+        return String.valueOf(idCuenta);
+    }
+
+    /**
+     * Obtiene el ID interno de una cuenta a partir de su número
+     */
+    private Integer obtenerIdCuentaPorNumero(String numeroCuenta) {
+        try {
+            Map<String, Object> cuenta = cuentaCliente.buscarPorNumero(numeroCuenta);
+            if (cuenta != null && cuenta.get("idCuenta") != null) {
+                return Integer.valueOf(cuenta.get("idCuenta").toString());
+            }
+        } catch (Exception e) {
+            log.error("Error buscando cuenta por número {}: {}", numeroCuenta, e.getMessage());
+        }
+        return null;
+    }
+
+    // --- TRANSFERENCIAS ENTRANTES (desde el switch) ---
+
+    @Override
+    @Transactional
+    public void procesarTransferenciaEntrante(String instructionId, String cuentaDestino,
+            BigDecimal monto, String bancoOrigen) {
+        log.info("📥 Procesando transferencia entrante desde {} a cuenta {}, monto: {}",
+                bancoOrigen, cuentaDestino, monto);
+
+        // 1. Buscar cuenta destino por número
+        Integer idCuentaDestino = obtenerIdCuentaPorNumero(cuentaDestino);
+        if (idCuentaDestino == null) {
+            throw new BusinessException("Cuenta destino no encontrada en BANTEC: " + cuentaDestino);
+        }
+
+        // 2. Verificar si ya existe una transacción con este instructionId
+        // (idempotencia)
+        if (transaccionRepository.findByReferencia(instructionId).isPresent()) {
+            log.warn("Transferencia entrante duplicada ignorada: {}", instructionId);
+            return;
+        }
+
+        // 3. Acreditar saldo a la cuenta destino
+        BigDecimal nuevoSaldo = procesarSaldo(idCuentaDestino, monto);
+
+        // 4. Registrar la transacción
+        Transaccion trx = Transaccion.builder()
+                .referencia(instructionId)
+                .tipoOperacion("TRANSFERENCIA_ENTRADA")
+                .idCuentaDestino(idCuentaDestino)
+                .idCuentaOrigen(null)
+                .cuentaExterna(cuentaDestino)
+                .monto(monto)
+                .saldoResultante(nuevoSaldo)
+                .descripcion("Transferencia recibida desde " + bancoOrigen)
+                .canal("SWITCH")
+                .estado("COMPLETADA")
+                .build();
+
+        transaccionRepository.save(trx);
+        log.info("✅ Transferencia entrante completada. ID: {}, Nuevo saldo: {}",
+                trx.getIdTransaccion(), nuevoSaldo);
     }
 }

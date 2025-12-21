@@ -111,11 +111,19 @@ export async function realizarTransferenciaInterbancaria(payload) {
 }
 
 export async function getBancos() {
-  return [
-    { id: 1, nombre: "Banco Pichincha" },
-    { id: 2, nombre: "Banco Guayaquil" },
-    { id: 3, nombre: "Produbanco" }
-  ];
+  try {
+    const response = await request('/api/bancos');
+    // Mapear respuesta para compatibilidad con el frontend
+    const bancos = response.bancos || [];
+    return bancos.map(b => ({
+      id: b.codigo || b.id,
+      nombre: b.nombre || b.name || b.codigo,
+      codigo: b.codigo
+    }));
+  } catch (e) {
+    console.warn("Error cargando bancos del switch:", e);
+    return [];
+  }
 }
 
 const bancaApi = {

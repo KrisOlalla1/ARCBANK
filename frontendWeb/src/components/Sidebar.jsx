@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen = true, onRequestClose }) {
 
   return (
     <aside className="sidebar" style={sidebarStyle}>
-      <div className="brand" style={styles.brand}>BANTEC</div>
+      <div className="brand" style={styles.brand}>ARCBANK</div>
 
       <div className="profile-mini" style={styles.profileMini}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

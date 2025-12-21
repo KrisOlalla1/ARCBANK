@@ -47,7 +47,7 @@ export default function Login() {
     <div className="login-container">
 
       <div className="left-section">
-        <img src={logo} alt="BANTEC" className="logo" />
+        <img src={logo} alt="ARCBANK" className="logo" />
 
         <div className="login-box">
 

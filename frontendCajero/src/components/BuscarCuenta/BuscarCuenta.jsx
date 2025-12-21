@@ -37,7 +37,7 @@ export default function BuscarCuenta() {
   return (
     <>
       <div className="header">
-        <div className="left">BANTEC</div>
+        <div className="left">ARCBANK</div>
         <div className="right">
           <button className="btn-logout" onClick={() => { localStorage.removeItem('cajero'); window.location.href = '/' }}>
             Cerrar sesión

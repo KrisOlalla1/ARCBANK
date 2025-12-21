@@ -141,7 +141,7 @@ export default function ValoresTransaccion() {
             nombre: `${cliente.nombres} ${cliente.apellidos}`.trim(),
             cedula: cliente.cedula,
             numero: numeroCuenta,
-            banco: "BANTEC",
+            banco: "ARCBANK",
           },
         },
       });

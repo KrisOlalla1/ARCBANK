@@ -33,7 +33,7 @@ export default function Comprobante() {
   const sucursal = state.sucursal || "Matriz";
 
   const depositante = state.depositante || { nombre: "---", identificacion: "---" };
-  const cuenta = state.cuenta || { nombre: "---", cedula: "---", numero: "---", banco: "BANTEC" };
+  const cuenta = state.cuenta || { nombre: "---", cedula: "---", numero: "---", banco: "ARCBANK" };
 
   const mascaraCuenta = (num) => {
     if (!num || num.length < 4) return num || "";
@@ -55,7 +55,7 @@ export default function Comprobante() {
     const labelOperacion = isDeposito ? "DEPÓSITO" : "RETIRO";
 
     doc.setFontSize(18);
-    doc.text(`BANTEC`, 105, 20, null, null, "center");
+    doc.text(`ARCBANK`, 105, 20, null, null, "center");
     doc.setFontSize(14);
     doc.text(`Comprobante de ${labelOperacion}`, 105, 30, null, null, "center");
 
@@ -87,14 +87,14 @@ export default function Comprobante() {
       doc.text(`CI: ${depositante.identificacion}`, 100, 112);
     }
 
-    doc.save(`BANTEC_${labelOperacion}_${id}.pdf`);
+    doc.save(`ARCBANK_${labelOperacion}_${id}.pdf`);
   };
 
   return (
     <div className="comp-page">
       <header className="retiro-header">
         <div className="rh-left">
-          <img src={logo} alt="BANTEC" className="rh-logo" />
+          <img src={logo} alt="ARCBANK" className="rh-logo" />
           <div className="rh-cajero">
             <div className="rh-user-icon"><i className="fa-solid fa-user"></i></div>
             <span className="rh-cajero-name">{primerNombre}</span>
