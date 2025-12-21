@@ -14,6 +14,7 @@ spring:
               - "http://localhost:4000"
               - "http://localhost:4001"
               - "http://34.41.171.65:3000"
+              - "http://34.41.171.65:3001"
               - "http://107.178.215.37:4000"
               - "http://107.178.215.37:4001"
               - "http://frontend-web-arcbank:80"
